@@ -68,7 +68,7 @@ The closing tag does not affect them.
 Example:
 
 ```html
-`bThis is bold `ithis is bold and italic
+`bThis is bold `ithis is italic
 =>
 <strong>This is bold <i>this is bold and italic<i></strong>
 ```
@@ -78,17 +78,17 @@ They can however be closed with themselves:
 ```html
 `bThis is bold`b `ithis is bold and italic`i. This is normal.
 =>
-<strong>This is bold</strong> <i>this is bold and italic<i>. This is normal.
+<strong>This is bold</strong> <i>this is italic<i>. This is normal.
 ```
 
 This library treats all codes as regular format codes if they have a tag specified, even if also a color is specified.
 
 ### The closing code
 
-The code `0` closes all currently open color codes.
+The code `0` closes the currently open color span.
 
 ```html
-`bBold `iand italic `$and red`0. But this is regular text.
+`bBold `iand italic `$and red`0. This is no longer red.
 =>
 <strong>
 	Bold
@@ -97,7 +97,11 @@ The code `0` closes all currently open color codes.
 		<span class="lotgd-c36">and red</span>
 	</i>
 </strong>
-. But this is regular text
+<strong>
+	<i>
+		. This is no longer red.
+	</i>
+</strong>
 ```
 
 This code is reserved and not configurable.

@@ -4,7 +4,7 @@
 # https://aka.ms/yaml
 
 trigger:
-  - main
+  - master
 
 pool:
   vmImage: ubuntu-latest
@@ -18,7 +18,7 @@ steps:
   - task: DotNetCoreCLI@2
     inputs:
       command: "test"
-      projects: "**/*Test.csproj"
+      projects: "**/*Tests.csproj"
       publishTestResults: true
       arguments: --collect "XPlat Code coverage"
 

@@ -13,18 +13,7 @@ public class Formatter {
 
 	public bool Color { get; set; } = true;
 
-	public Formatter(List<LotgdFormatCode> codes) {
-		this._codes = codes;
-	}
-
-	public void Clear() {
-		this.ClearText();
-		this.OpenTags.Clear();
-	}
-
-	public void ClearText() {
-		this._nodes.Clear();
-	}
+	#region Private methods
 
 	private void AddNode(INode node) {
 		this._nodes.Add(node);
@@ -57,7 +46,7 @@ public class Formatter {
 		return isOpen;
 	}
 
-	public void Parse(string input, bool isUnsafe) {
+	private void Parse(string input, bool isUnsafe) {
 		if (!input.Contains('`')) {
 			this.AddTextNode(input, isUnsafe);
 			return;
@@ -135,11 +124,48 @@ public class Formatter {
 		}
 	}
 
+	#endregion
+
+	public Formatter(List<LotgdFormatCode> codes) {
+		this._codes = codes;
+	}
+
+	/// <summary>
+	/// Clear all output and open tags.
+	/// </summary>
+	public void Clear() {
+		this.ClearText();
+		this.OpenTags.Clear();
+	}
+
+	/// <summary>
+	/// Clear current output, but keep memory of currently open tags.
+	/// </summary>
+	public void ClearText() {
+		this._nodes.Clear();
+	}
+
+	/// <summary>
+	/// Add text to the formatter.
+	/// </summary>
+	/// <param name="input">
+	/// The text to parse and add to the output.
+	/// </param>
+	/// <param name="isUnsafe">
+	/// If set to true, the formatter will pass through HTML content without escapting it.
+	/// Use with caution.
+	/// </param>
+	/// <returns>
+	/// The same instance of the formatter for easy chaining.
+	/// </returns>
 	public Formatter AddText(string input, bool isUnsafe = false) {
 		this.Parse(input, isUnsafe);
 		return this;
 	}
 
+	/// <summary>
+	/// Get the output of the formatter.
+	/// </summary>
 	public IHtmlContent GetOutput() {
 		var output = new HtmlContentBuilder();
 		foreach (INode node in this._nodes) {
@@ -148,7 +174,11 @@ public class Formatter {
 		return output;
 	}
 
-	internal IHtmlContent CloseOpenTags() {
+	/// <summary>
+	/// Close the currently open tags and return HTML for the respective closing tags.
+	/// This also clears the output.
+	/// </summary>
+	public IHtmlContent CloseOpenTags() {
 		var builder = new HtmlContentBuilder();
 		foreach (var token in this.OpenTags.Keys) {
 			var code = this._codes.Find(y => y.Token == token);

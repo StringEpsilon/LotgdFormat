@@ -4,7 +4,10 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
-	  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
+	<ItemGroup>
+    	<FrameworkReference Include="Microsoft.AspNetCore.App" />
+  	</ItemGroup>
+	<ItemGroup>
+		<DotNetCliToolReference Include="ReportGenerator" Version="4.8.12"/>
+	</ItemGroup>
 </Project>

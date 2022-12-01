@@ -2,9 +2,13 @@
 
 A C# implementation of the LotgD style formatting code for text formatting.
 
+## How to use this library
+
+See API documentation. (TODO)
+
 ## Code syntax
 
-Every code is marked with a backtick ` and consists of a single arbitrary character that is not a whitespace.
+Every code is marked with a backtick ` and consists of a single arbitrary character.
 
 Example:
 
@@ -98,9 +102,15 @@ The code `0` closes all currently open color codes.
 
 This code is reserved and not configurable.
 
-### Library use
+### Escaping
 
-See API documentation. (TODO.)
+To render the backtick (`), the backtick needs to be doubled up:
+
+```
+This is a backtick: ``
+=>
+This is a backtick: `
+```
 
 ----
 ## Appendix

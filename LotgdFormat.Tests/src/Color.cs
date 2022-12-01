@@ -17,6 +17,28 @@ public class Color {
 	}
 
 	[Fact]
+	public void Renders_Plaintext_On_Redudant_CloseTag() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode(){ Token = '@', Color = "00FF00"}
+		});
+		IHtmlContent result = formatter.AddText("`0This is plaintext.").GetOutput();
+
+		Assert.Equal("This is plaintext.", result.GetString());
+	}
+
+	[Fact]
+	public void Renders_Plaintext_ColorDisabled() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode(){ Token = '@', Color = "00FF00"},
+			new LotgdFormatCode(){ Token = '$', Color = "FF0000"}
+		});
+		formatter.Color = false;
+		IHtmlContent result = formatter.AddText("`$red `@green `$red `@green").GetOutput();
+
+		Assert.Equal("red green red green", result.GetString());
+	}
+
+	[Fact]
 	public void Continues_Color() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '@', Color = "00FF00"}

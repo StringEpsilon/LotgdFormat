@@ -24,5 +24,4 @@
   <ItemGroup>
     <ProjectReference Include="..\LotgdFormat\LotgdFormat.csproj" />
   </ItemGroup>
-
 </Project>

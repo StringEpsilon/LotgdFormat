@@ -1,13 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<Title>LotgdFormat</Title>
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<Version>0.5.0</Version>
+		<Authors>StringEpsilon</Authors>
+		<Summary>A C# implementation of the LotgD style formatting code for text.</Summary>
+		<PackageTags>lotgd</PackageTags>
+		<PackageLicenseExpression>GPL-2.0-only</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/StringEpsilon/LotgdFormat</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/StringEpsilon/LotgdFormat</RepositoryUrl>
+		<RespositoryType>git</RespositoryType>
 	</PropertyGroup>
 	<ItemGroup>
+		<None Include="..\COPYING.md" Pack="true" PackagePath="/"/>
     	<FrameworkReference Include="Microsoft.AspNetCore.App" />
   	</ItemGroup>
-	<ItemGroup>
-		<DotNetCliToolReference Include="ReportGenerator" Version="4.8.12"/>
-	</ItemGroup>
 </Project>

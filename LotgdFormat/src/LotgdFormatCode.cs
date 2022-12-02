@@ -2,10 +2,11 @@
 
 #nullable enable
 internal enum CodeType {
-	Color,
+	Invalid = -1,
+	Color = 0,
 	SelfClosing,
 	Formatting,
-	Terminating
+	Terminating,
 }
 
 public partial class LotgdFormatCode {
@@ -37,17 +38,16 @@ public partial class LotgdFormatCode {
 	public bool SelfClosing { get; set; } = false;
 
 	internal CodeType GetCodeType() {
+		if (this.Color != null) {
+			return CodeType.Color;
+		}
 		if (this.Tag == null) {
-			if (this.Color != null) {
-				return CodeType.Color;
-			}
+			return CodeType.Invalid;
 		}
 
-		if (this.SelfClosing) {
-			return CodeType.SelfClosing;
-		} else {
-			return CodeType.Formatting;
-		}
+		return this.SelfClosing
+			? CodeType.SelfClosing
+			: CodeType.Formatting;
 	}
 }
 

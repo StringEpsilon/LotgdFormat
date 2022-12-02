@@ -31,7 +31,7 @@ public class Formatter {
 	}
 
 	private void AddCloser(LotgdFormatCode code) {
-		if (code != null) {
+		if (code?.Tag != null) {
 			this.AddNode(new TagCloseNode(code.Tag));
 			this.OpenTags[code.Token] = false;
 		}
@@ -97,11 +97,13 @@ public class Formatter {
 						if (_lastColor >= 0) {
 							this.AddNode(new ColorCloseNode());
 						}
-						this.AddNode(new ColorNode(token, code.Style));
+						this.AddNode(new ColorNode(token));
 						break;
 					}
 					case CodeType.SelfClosing: {
-						this.AddNode(new SelfClosingNode(code.Tag));
+						if (code.Tag != null){
+							this.AddNode(new SelfClosingNode(code.Tag));
+						}
 						break;
 					}
 					case CodeType.Formatting: {
@@ -184,7 +186,7 @@ public class Formatter {
 			var code = this._codes.Find(y => y.Token == token);
 			if (code?.GetCodeType() == CodeType.Color) {
 				builder.AppendHtml("</span>");
-			} else if (code != null) {
+			} else if (code != null && code.Tag != null) {
 				builder.AppendHtml(new TagCloseNode(code.Tag).Render());
 			}
 		}

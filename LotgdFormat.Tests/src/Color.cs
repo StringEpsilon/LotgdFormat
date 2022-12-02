@@ -1,6 +1,5 @@
 namespace LotgdFormat.Tests;
 
-using System.Collections.Specialized;
 using LotgdFormat;
 using Microsoft.AspNetCore.Html;
 using Xunit;

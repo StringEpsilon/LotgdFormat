@@ -26,6 +26,16 @@ public class Tag {
 	}
 
 	[Fact]
+	public void Renders_Style() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode(){ Token = 'h', Tag = "span", Style="font-size: larger"}
+		});
+		IHtmlContent result = formatter.AddText("`hBig Text`h").GetOutput();
+
+		Assert.Equal("<span style=\"font-size: larger\">Big Text</span>", result.GetString());
+	}
+
+	[Fact]
 	public void Renders_CloseOpenTags() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'c', Tag = "center"}

@@ -6,19 +6,13 @@ namespace LotgdFormat;
 #nullable enable
 
 public class ColorNode : INode {
-	public ColorNode(char token, string? styles = null) {
+	public ColorNode(char token) {
 		this.Token = token;
 	}
 
 	public char Token { get; set; }
-	public string? Styles { get; set; }
 
 	public IHtmlContent Render() {
-		var rawHthml = new StringBuilder();
-		rawHthml.Append("<span class=\"c")
-			.Append((int)this.Token)
-			.Append("\">");
-
-		return new HtmlContentBuilder().AppendHtml(rawHthml.ToString());
+		return new HtmlString($"<span class=\"c{(int)this.Token}\">");
 	}
 }

@@ -37,17 +37,16 @@ public partial class LotgdFormatCode {
 	/// </summary>
 	public bool SelfClosing { get; set; } = false;
 
-	internal CodeType GetCodeType() {
+	internal INode? GetNode() {
 		if (this.Color != null) {
-			return CodeType.Color;
-		}
+			return new ColorNode(this.Token);
+		};
 		if (this.Tag == null) {
-			return CodeType.Invalid;
+			return null;
 		}
-
 		return this.SelfClosing
-			? CodeType.SelfClosing
-			: CodeType.Formatting;
+			? new SelfClosingNode(this.Tag)
+			: new TagNode(this.Token, this.Tag, this.Style);
 	}
 }
 

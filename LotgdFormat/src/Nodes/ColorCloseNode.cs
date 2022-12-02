@@ -4,6 +4,6 @@ namespace LotgdFormat;
 
 public class ColorCloseNode : INode {
 	public IHtmlContent Render() {
-		return new HtmlContentBuilder().AppendHtml("</span>");
+		return new HtmlString("</span>");
 	}
 }

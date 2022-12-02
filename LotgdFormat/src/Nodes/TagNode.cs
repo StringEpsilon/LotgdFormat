@@ -17,14 +17,11 @@ public class TagNode : INode {
 	}
 
 	public IHtmlContent Render() {
-		var rawHthml = new StringBuilder();
-		rawHthml.Append('<').Append(this.Tag);
-		if (this.Styles != null) {
-			rawHthml.Append(" style=\"").Append(this.Styles).Append('"');
+		if (this.Styles == null) {
+			return new HtmlString($"<{this.Tag}>");
+		} else {
+			return new HtmlString($"<{this.Tag} style=\"{this.Styles}\">");
 		}
-		rawHthml.Append('>');
-
-		return new HtmlContentBuilder().AppendHtml(rawHthml.ToString());
 	}
 }
 

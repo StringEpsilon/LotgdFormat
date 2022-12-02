@@ -5,10 +5,9 @@ namespace LotgdFormat;
 #nullable enable
 
 public class Formatter {
-	private readonly List<LotgdFormatCode> _codes;
+	private readonly Dictionary<char, LotgdFormatCode> _codeDictionary;
 	private readonly List<INode> _nodes = new();
 	private readonly Dictionary<char, bool> _openTags = new();
-	private int _currentIndex;
 	private int _lastColor = -1;
 
 	public bool Color { get; set; } = true;
@@ -16,17 +15,29 @@ public class Formatter {
 	#region Private methods
 
 	private void AddNode(INode node) {
-		this._nodes.Add(node);
-		this._currentIndex = this._nodes.Count - 1;
+
 		if (node is TagNode tagNode) {
-			if (!this._openTags.ContainsKey(tagNode.Token)) {
-				this._openTags.Add(tagNode.Token, true);
+			if (this.IsTagOpen(tagNode.Token)) {
+				this._nodes.Add(new TagCloseNode(tagNode.Tag));
+				this._openTags[tagNode.Token] = false;
 			} else {
-				this._openTags[tagNode.Token] = true;
+				this._nodes.Add(node);
+				if (!this._openTags.ContainsKey(tagNode.Token)) {
+					this._openTags.Add(tagNode.Token, true);
+				} else {
+					this._openTags[tagNode.Token] = true;
+				}
 			}
-		}
-		if (node is ColorNode) {
-			this._lastColor = this._currentIndex;
+		} else if (node is ColorNode) {
+			if (this.Color) {
+				if (_lastColor >= 0) {
+					this._nodes.Add(new ColorCloseNode());
+				}
+				this._nodes.Add(node);
+				this._lastColor = this._nodes.Count - 1;
+			}
+		} else {
+			this._nodes.Add(node);
 		}
 	}
 
@@ -50,26 +61,29 @@ public class Formatter {
 			return;
 		}
 
-		var sections = input.Split('`');
-		if (!string.IsNullOrEmpty(sections[0])) {
-			this.AddTextNode(sections[0], isUnsafe);
-		}
+		var lastToken = 0;
 
-		bool escaped = false;
-		foreach (string section in sections.Skip(1)) {
-			if (section.Length == 0) {
-				if (escaped == true) {
-					this.AddTextNode("`", isUnsafe);
-				}
-				escaped = !escaped;
+		while (true) {
+			int i = input.IndexOf('`', lastToken);
+			if (i < 0) {
+				break;
+			}
+			if (input[i] != '`') {
 				continue;
 			}
-			char token = section[0];
-			string text = section.Substring(1);
-			if (token == '0') {
+			char token = input[i + 1];
+
+			if (lastToken <= i - 1) {
+				this.AddTextNode(input.Substring(lastToken, i - lastToken), isUnsafe);
+			}
+			lastToken = i + 2;
+			i++;
+			if (token == '`') {
+				this.AddTextNode("`", isUnsafe);
+			} else if (token == '0') {
 				if (_lastColor >= 0) {
 					List<INode> stack = new();
-					var index = this._currentIndex;
+					var index = this._nodes.Count - 1;
 					while (index > 0 && index != this._lastColor) {
 						if (this._nodes[index] is TagNode tagNode) {
 							if (this.IsTagOpen(tagNode.Token)) {
@@ -86,49 +100,30 @@ public class Formatter {
 					this._lastColor = -1;
 				} else {
 				}
-			} else {
-				var code = this._codes.Find(y => y.Token == token);
-				switch (code?.GetCodeType()) {
-					case CodeType.Color: {
-						if (!this.Color) {
-							break;
-						}
-						if (_lastColor >= 0) {
-							this.AddNode(new ColorCloseNode());
-						}
-						this.AddNode(new ColorNode(token));
-						break;
-					}
-					case CodeType.SelfClosing: {
-						if (code.Tag != null) {
-							this.AddNode(new SelfClosingNode(code.Tag));
-						}
-						break;
-					}
-					case CodeType.Formatting: {
-						if (this.IsTagOpen(token) && code.Tag != null) {
-							this.AddCloser(code.Tag, token);
-						} else if (code.Tag != null) {
-							this.AddNode(new TagNode(token, code.Tag, code.Style));
-						}
-						break;
-					}
-					default: {
-						// Nothing to do.
-						break;
-					}
+			} else if (token != '`') {
+				if (!this._codeDictionary.ContainsKey(token)) {
+					continue;
+				}
+				var code = this._codeDictionary[token];
+				INode? node = code.GetNode();
+				if (node != null) {
+					this.AddNode(node);
 				}
 			}
-			if (text.Length > 0) {
-				this.AddTextNode(text, isUnsafe);
-			}
+		}
+
+		if (lastToken < input.Length) {
+			this.AddTextNode(input.Substring(lastToken), isUnsafe);
 		}
 	}
 
 	#endregion
 
 	public Formatter(List<LotgdFormatCode> codes) {
-		this._codes = codes;
+		_codeDictionary = new Dictionary<char, LotgdFormatCode>();
+		foreach (var code in codes) {
+			_codeDictionary.Add(code.Token, code);
+		}
 	}
 
 	/// <summary>
@@ -182,8 +177,8 @@ public class Formatter {
 	public IHtmlContent CloseOpenTags() {
 		var builder = new HtmlContentBuilder();
 		foreach (var token in this._openTags.Keys) {
-			var code = this._codes.Find(y => y.Token == token);
-			if (code?.GetCodeType() == CodeType.Color) {
+			var code = this._codeDictionary[token];
+			if (code.Color != null) {
 				builder.AppendHtml("</span>");
 			} else if (code != null && code.Tag != null) {
 				builder.AppendHtml(new TagCloseNode(code.Tag).Render());

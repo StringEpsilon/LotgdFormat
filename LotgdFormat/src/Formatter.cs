@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Html;
+﻿using System.Text;
 
 namespace LotgdFormat;
 
@@ -14,8 +14,10 @@ public class Formatter {
 
 	#region Private methods
 
-	private void AddNode(INode node) {
-
+	private void AddNode(INode? node) {
+		if (node == null) {
+			return;
+		}
 		if (node is TagNode tagNode) {
 			if (this.IsTagOpen(tagNode.Token)) {
 				this._nodes.Add(new TagCloseNode(tagNode.Tag));
@@ -41,18 +43,15 @@ public class Formatter {
 		}
 	}
 
-	private void AddCloser(string tag, char token) {
-		this.AddNode(new TagCloseNode(tag));
-		this._openTags[token] = false;
-	}
-
 	private void AddTextNode(string text, bool isUnsafe) {
-		this.AddNode(new TextNode { Text = text, IsUnsafe = isUnsafe });
+		this._nodes.Add(new TextNode { Text = text, IsUnsafe = isUnsafe });
 	}
 
 	private bool IsTagOpen(char token) {
-		this._openTags.TryGetValue(token, out bool isOpen);
-		return isOpen;
+		if (!this._openTags.ContainsKey(token)) {
+			return false;
+		}
+		return this._openTags[token];
 	}
 
 	private void Parse(string input, bool isUnsafe) {
@@ -62,10 +61,9 @@ public class Formatter {
 		}
 
 		var lastToken = 0;
-
 		while (true) {
 			int i = input.IndexOf('`', lastToken);
-			if (i < 0) {
+			if (i == -1) {
 				break;
 			}
 			if (input[i] != '`') {
@@ -77,38 +75,30 @@ public class Formatter {
 				this.AddTextNode(input.Substring(lastToken, i - lastToken), isUnsafe);
 			}
 			lastToken = i + 2;
-			i++;
 			if (token == '`') {
 				this.AddTextNode("`", isUnsafe);
 			} else if (token == '0') {
 				if (_lastColor >= 0) {
-					List<INode> stack = new();
 					var index = this._nodes.Count - 1;
-					while (index > 0 && index != this._lastColor) {
+					List<TagNode> stack = new();
+					while (index > this._lastColor && index != this._lastColor) {
 						if (this._nodes[index] is TagNode tagNode) {
 							if (this.IsTagOpen(tagNode.Token)) {
 								stack.Add(tagNode);
-								this.AddCloser(tagNode.Tag, tagNode.Token);
+								this._nodes.Add(new TagCloseNode(tagNode.Tag));
+								this._openTags[tagNode.Token] = false;
 							}
 						}
 						index--;
 					}
-					this.AddNode(new ColorCloseNode());
-					foreach (INode node in stack) {
+					this._nodes.Add(new ColorCloseNode());
+					foreach (TagNode node in stack) {
 						this.AddNode(node);
 					}
 					this._lastColor = -1;
-				} else {
 				}
-			} else if (token != '`') {
-				if (!this._codeDictionary.ContainsKey(token)) {
-					continue;
-				}
-				var code = this._codeDictionary[token];
-				INode? node = code.GetNode();
-				if (node != null) {
-					this.AddNode(node);
-				}
+			} else if (this._codeDictionary.TryGetValue(token, out var code)) {
+				this.AddNode(code.GetNode());
 			}
 		}
 
@@ -162,31 +152,31 @@ public class Formatter {
 	/// <summary>
 	/// Get the output of the formatter.
 	/// </summary>
-	public IHtmlContent GetOutput() {
-		var output = new HtmlContentBuilder();
+	public string GetOutput() {
+		var output = new StringBuilder();
 		foreach (INode node in this._nodes) {
-			output.AppendHtml(node.Render());
+			output.Append(node.Render());
 		}
-		return output;
+		return output.ToString();
 	}
 
 	/// <summary>
 	/// Close the currently open tags and return HTML for the respective closing tags.
 	/// This also clears the output.
 	/// </summary>
-	public IHtmlContent CloseOpenTags() {
-		var builder = new HtmlContentBuilder();
+	public string CloseOpenTags() {
+		var builder = new StringBuilder();
 		foreach (var token in this._openTags.Keys) {
 			var code = this._codeDictionary[token];
 			if (code.Color != null) {
-				builder.AppendHtml("</span>");
+				builder.Append("</span>");
 			} else if (code != null && code.Tag != null) {
-				builder.AppendHtml(new TagCloseNode(code.Tag).Render());
+				builder.Append(new TagCloseNode(code.Tag).Render());
 			}
 		}
 
 		this._openTags.Clear();
 		this.Clear();
-		return builder;
+		return builder.ToString();
 	}
 }

@@ -1,7 +1,6 @@
 namespace LotgdFormat.Tests;
 
 using LotgdFormat;
-using Microsoft.AspNetCore.Html;
 using Xunit;
 
 public class Tag {
@@ -10,9 +9,9 @@ public class Tag {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
 		});
-		IHtmlContent result = formatter.AddText("`cThis is centered").GetOutput();
+		string result = formatter.AddText("`cThis is centered").GetOutput();
 
-		Assert.Equal("<center>This is centered", result.GetString());
+		Assert.Equal("<center>This is centered", result);
 	}
 
 	[Fact]
@@ -20,9 +19,9 @@ public class Tag {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
 		});
-		IHtmlContent result = formatter.AddText("`cThis is centered`cThis isn't").GetOutput();
+		string result = formatter.AddText("`cThis is centered`cThis isn't").GetOutput();
 
-		Assert.Equal("<center>This is centered</center>This isn&#39;t", result.GetString());
+		Assert.Equal("<center>This is centered</center>This isn&#39;t", result);
 	}
 
 	[Fact]
@@ -30,9 +29,9 @@ public class Tag {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'h', Tag = "span", Style="font-size: larger"}
 		});
-		IHtmlContent result = formatter.AddText("`hBig Text`h").GetOutput();
+		string result = formatter.AddText("`hBig Text`h").GetOutput();
 
-		Assert.Equal("<span style=\"font-size: larger\">Big Text</span>", result.GetString());
+		Assert.Equal("<span style=\"font-size: larger\">Big Text</span>", result);
 	}
 
 	[Fact]
@@ -40,8 +39,8 @@ public class Tag {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
 		});
-		IHtmlContent result = formatter.AddText("`cThis is centered").GetOutput();
-		Assert.Equal("<center>This is centered", result.GetString());
-		Assert.Equal("</center>", formatter.CloseOpenTags().GetString());
+		string result = formatter.AddText("`cThis is centered").GetOutput();
+		Assert.Equal("<center>This is centered", result);
+		Assert.Equal("</center>", formatter.CloseOpenTags());
 	}
 }

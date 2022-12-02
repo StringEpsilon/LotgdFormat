@@ -1,7 +1,6 @@
 namespace LotgdFormat.Tests;
 
 using LotgdFormat;
-using Microsoft.AspNetCore.Html;
 using Xunit;
 
 public class InvalidConfig {
@@ -10,9 +9,9 @@ public class InvalidConfig {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'E', Tag = null, Color = null}
 		});
-		IHtmlContent result = formatter.AddText("`EThis is defective`0").GetOutput();
+		string result = formatter.AddText("`EThis is defective`0").GetOutput();
 
-		Assert.Equal("This is defective", result.GetString());
+		Assert.Equal("This is defective", result);
 	}
 
 	[Fact]
@@ -20,8 +19,8 @@ public class InvalidConfig {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'E', Tag = "b", Color = "FF0000"}
 		});
-		IHtmlContent result = formatter.AddText("`EThis is not bold.`0").GetOutput();
+		string result = formatter.AddText("`EThis is not bold.`0").GetOutput();
 
-		Assert.Equal("<span class=\"c69\">This is not bold.</span>", result.GetString());
+		Assert.Equal("<span class=\"c69\">This is not bold.</span>", result);
 	}
 }

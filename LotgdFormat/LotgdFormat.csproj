@@ -15,6 +15,5 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="..\COPYING.md" Pack="true" PackagePath="/"/>
-    	<FrameworkReference Include="Microsoft.AspNetCore.App" />
-  	</ItemGroup>
+	</ItemGroup>
 </Project>

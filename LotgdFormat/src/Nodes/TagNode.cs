@@ -1,6 +1,3 @@
-using System.Text;
-using Microsoft.AspNetCore.Html;
-
 namespace LotgdFormat;
 
 #nullable enable
@@ -16,11 +13,11 @@ public class TagNode : INode {
 		this.Styles = styles;
 	}
 
-	public IHtmlContent Render() {
+	public string Render() {
 		if (this.Styles == null) {
-			return new HtmlString($"<{this.Tag}>");
+			return $"<{this.Tag}>";
 		} else {
-			return new HtmlString($"<{this.Tag} style=\"{this.Styles}\">");
+			return $"<{this.Tag} style=\"{this.Styles}\">";
 		}
 	}
 }

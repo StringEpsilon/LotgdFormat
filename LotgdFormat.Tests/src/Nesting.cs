@@ -1,7 +1,6 @@
 
 namespace LotgdFormat.Tests;
 using LotgdFormat;
-using Microsoft.AspNetCore.Html;
 using Xunit;
 
 public class Nesting {
@@ -11,8 +10,8 @@ public class Nesting {
 			new LotgdFormatCode(){ Token = '@', Color="00FF00"},
 			new LotgdFormatCode(){ Token = 'b', Tag="b"}
 		});
-		IHtmlContent result = formatter.AddText("`@green `bbold green`0 bold`b").GetOutput();
+		string result = formatter.AddText("`@green `bbold green`0 bold`b").GetOutput();
 
-		Assert.Equal("<span class=\"c64\">green <b>bold green</b></span><b> bold</b>", result.GetString());
+		Assert.Equal("<span class=\"c64\">green <b>bold green</b></span><b> bold</b>", result);
 	}
 }

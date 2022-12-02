@@ -22,6 +22,6 @@ public class InvalidConfig {
 		});
 		IHtmlContent result = formatter.AddText("`EThis is not bold.`0").GetOutput();
 
-		Assert.Equal("<span class=\"c69\">This is not bold.", result.GetString());
+		Assert.Equal("<span class=\"c69\">This is not bold.</span>", result.GetString());
 	}
 }

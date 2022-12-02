@@ -69,13 +69,14 @@ public class Formatter {
 			char token = section[0];
 			string text = section.Substring(1);
 			if (token == '0') {
-				if (_lastColor > 0) {
+				if (_lastColor >= 0) {
 					List<INode> stack = new();
 					var index = this._currentIndex;
 					while (index > 0 && index != this._lastColor) {
 						if (this._nodes[index] is TagNode tagNode) {
 							if (this.IsTagOpen(tagNode.Token)) {
-								stack.Add(this._nodes[index]);
+								stack.Add(tagNode);
+								this.AddNode(new TagCloseNode(tagNode.Tag));
 							}
 						}
 						index--;
@@ -101,7 +102,7 @@ public class Formatter {
 						break;
 					}
 					case CodeType.SelfClosing: {
-						if (code.Tag != null){
+						if (code.Tag != null) {
 							this.AddNode(new SelfClosingNode(code.Tag));
 						}
 						break;

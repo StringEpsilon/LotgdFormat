@@ -4,6 +4,8 @@
 
 The formatter works by first parsing the text into a list of nodes, then rendering each node in turn.
 
+In rendering, it tries to make compliant HTML, but some tags may be wrongly nested in some cases.
+
 ```
 `@This is`0 `ban example`b
 ```

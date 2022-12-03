@@ -2,11 +2,11 @@
 
 namespace LotgdFormat;
 
-#nullable enable
+#nullable disable
 
 public class Formatter {
 	private readonly Dictionary<char, LotgdFormatCode> _codeDictionary;
-	private readonly List<INode> _nodes = new();
+	private readonly List<Node> _nodes = new();
 	private readonly Dictionary<char, bool> _openTags = new();
 	private int _lastColor = -1;
 
@@ -14,26 +14,23 @@ public class Formatter {
 
 	#region Private methods
 
-	private void AddNode(INode? node) {
-		if (node == null) {
-			return;
-		}
-		if (node is TagNode tagNode) {
-			if (this.IsTagOpen(tagNode.Token)) {
-				this._nodes.Add(new TagCloseNode(tagNode.Tag));
-				this._openTags[tagNode.Token] = false;
+	private void AddNode(Node node) {
+		if (node.Type == NodeType.Tag) {
+			if (this.IsTagOpen(node.Token)) {
+				this._nodes.Add(Node.CreateTagCloseNode(_codeDictionary[node.Token].Tag));
+				this._openTags[node.Token] = false;
 			} else {
 				this._nodes.Add(node);
-				if (!this._openTags.ContainsKey(tagNode.Token)) {
-					this._openTags.Add(tagNode.Token, true);
+				if (!this._openTags.ContainsKey(node.Token)) {
+					this._openTags.Add(node.Token, true);
 				} else {
-					this._openTags[tagNode.Token] = true;
+					this._openTags[node.Token] = true;
 				}
 			}
-		} else if (node is ColorNode) {
+		} else if (node.Type == NodeType.Color) {
 			if (this.Color) {
 				if (_lastColor >= 0) {
-					this._nodes.Add(new ColorCloseNode());
+					this._nodes.Add(Node.CreateColorCloseNode());
 				}
 				this._nodes.Add(node);
 				this._lastColor = this._nodes.Count - 1;
@@ -44,7 +41,7 @@ public class Formatter {
 	}
 
 	private void AddTextNode(string text, bool isUnsafe) {
-		this._nodes.Add(new TextNode { Text = text, IsUnsafe = isUnsafe });
+		this._nodes.Add(Node.CreateTextNode(text, isUnsafe));
 	}
 
 	private bool IsTagOpen(char token) {
@@ -80,19 +77,20 @@ public class Formatter {
 			} else if (token == '0') {
 				if (_lastColor >= 0) {
 					var index = this._nodes.Count - 1;
-					List<TagNode> stack = new();
+					List<Node> stack = new(index - this._lastColor);
 					while (index > this._lastColor && index != this._lastColor) {
-						if (this._nodes[index] is TagNode tagNode) {
-							if (this.IsTagOpen(tagNode.Token)) {
-								stack.Add(tagNode);
-								this._nodes.Add(new TagCloseNode(tagNode.Tag));
-								this._openTags[tagNode.Token] = false;
+						var node = this._nodes[index];
+						if (node.Type == NodeType.Tag) {
+							if (this.IsTagOpen(node.Token)) {
+								stack.Add(node);
+								this._nodes.Add(Node.CreateTagCloseNode(_codeDictionary[node.Token].Tag));
+								this._openTags[node.Token] = false;
 							}
 						}
 						index--;
 					}
-					this._nodes.Add(new ColorCloseNode());
-					foreach (TagNode node in stack) {
+					this._nodes.Add(Node.CreateColorCloseNode());
+					foreach (Node node in stack) {
 						this.AddNode(node);
 					}
 					this._lastColor = -1;
@@ -154,8 +152,8 @@ public class Formatter {
 	/// </summary>
 	public string GetOutput() {
 		var output = new StringBuilder();
-		foreach (INode node in this._nodes) {
-			output.Append(node.Render());
+		for (int i = 0; i < this._nodes.Count; i++) {
+			output.Append(_nodes[i].Output);
 		}
 		return output.ToString();
 	}
@@ -171,7 +169,7 @@ public class Formatter {
 			if (code.Color != null) {
 				builder.Append("</span>");
 			} else if (code != null && code.Tag != null) {
-				builder.Append(new TagCloseNode(code.Tag).Render());
+				builder.Append(Node.CreateTagCloseNode(code.Tag).Output);
 			}
 		}
 

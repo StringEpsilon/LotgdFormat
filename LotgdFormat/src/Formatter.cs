@@ -127,16 +127,18 @@ public class Formatter {
 	/// <summary>
 	/// Clear all output and open tags.
 	/// </summary>
-	public void Clear() {
+	public Formatter Clear() {
 		this.ClearText();
 		this._openTags.Clear();
+		return this;
 	}
 
 	/// <summary>
 	/// Clear current output, but keep memory of currently open tags.
 	/// </summary>
-	public void ClearText() {
+	public Formatter ClearText() {
 		this._nodes.Clear();
+		return this;
 	}
 
 	/// <summary>

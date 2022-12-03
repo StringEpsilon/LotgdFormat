@@ -39,8 +39,7 @@ public class Tag {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
 		});
-		string result = formatter.AddText("`cThis is centered").GetOutput();
-		Assert.Equal("<center>This is centered", result);
-		Assert.Equal("</center>", formatter.CloseOpenTags());
+		string result = formatter.AddText("`cThis is centered").CloseOpenTags().GetOutput();
+		Assert.Equal("<center>This is centered</center>", result);
 	}
 }

@@ -64,6 +64,18 @@ public class Color {
 	}
 
 	[Fact]
+	public void CloseOpenTags_Closes_Color() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode(){ Token = '@', Color = "00FF00"}
+		});
+		string result = formatter.AddText("`@green").GetOutput();
+
+		Assert.Equal("<span class=\"c64\">green", result);
+		result = formatter.CloseOpenTags().GetOutput();
+		Assert.Equal("<span class=\"c64\">green</span>", result);
+	}
+
+	[Fact]
 	public void Acjacent_Colors() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '@', Color = "00FF00"},

@@ -10,6 +10,8 @@ internal enum CodeType {
 }
 
 public partial class LotgdFormatCode {
+	private static readonly Node _invalidNode = new(NodeType.Invalid);
+
 	/// <summary>
 	/// The single character token to that marks this formatting token.
 	/// Must be unique.
@@ -41,6 +43,9 @@ public partial class LotgdFormatCode {
 		if (this.Color != null) {
 			return Node.CreateColorNode(this.Token);
 		};
+		if (this.Tag == null) {
+			return _invalidNode;
+		}
 		return this.SelfClosing
 			? Node.CreateSelfClosingNode(this.Tag)
 			: Node.CreateTagNode(this.Token, this.Tag, this.Style);

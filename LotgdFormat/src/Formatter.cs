@@ -15,6 +15,9 @@ public class Formatter {
 	#region Private methods
 
 	private void AddNode(Node node) {
+		if (node.Type == NodeType.Invalid) {
+			return;
+		}
 		if (node.Type == NodeType.Tag) {
 			if (this.IsTagOpen(node.Token)) {
 				this._nodes.Add(Node.CreateTagCloseNode(_codeDictionary[node.Token].Tag));

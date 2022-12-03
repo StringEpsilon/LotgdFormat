@@ -1,6 +1,8 @@
 
 using System.Web;
 
+namespace LotgdFormat;
+
 public enum NodeType {
 	Invalid,
 	Text,
@@ -12,10 +14,15 @@ public enum NodeType {
 }
 
 
-public struct Node {
+public readonly struct Node {
 	public readonly NodeType Type;
 	public readonly string Output;
 	public readonly char Token;
+
+	public Node(NodeType type) {
+		this.Type = type;
+		this.Output = string.Empty;
+	}
 
 	public Node(NodeType type, string output) {
 		this.Type = type;

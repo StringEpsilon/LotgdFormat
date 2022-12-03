@@ -174,7 +174,9 @@ public class Formatter {
 	/// Close the currently open tags.
 	/// </summary>
 	public Formatter CloseOpenTags() {
-		this.CloseColor();
+		if (this._lastColor != -1) {
+			this.CloseColor();
+		}
 		foreach (var token in this._openTags.Keys) {
 			var code = this._codeDictionary[token];
 			if (code.Tag != null) {

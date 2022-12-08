@@ -1,15 +1,6 @@
 ﻿namespace LotgdFormat;
 
-#nullable enable
-internal enum CodeType {
-	Invalid = -1,
-	Color = 0,
-	SelfClosing,
-	Formatting,
-	Terminating,
-}
-
-public partial class LotgdFormatCode {
+public class LotgdFormatCode {
 	private static readonly Node _invalidNode = new(NodeType.Invalid);
 
 	/// <summary>

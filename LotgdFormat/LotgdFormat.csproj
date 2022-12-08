@@ -14,7 +14,7 @@
 		<RespositoryType>git</RespositoryType>
 	</PropertyGroup>
 	<ItemGroup>
-		<None Include="..\COPYING.md" Pack="true" PackagePath="/"/>
-		<None Include="..\README.md" Pack="true" PackagePath="/"/>
+		<None Include="..\COPYING.md" Pack="true" PackagePath="/" />
+		<None Include="..\README.md" Pack="true" PackagePath="/" />
 	</ItemGroup>
 </Project>

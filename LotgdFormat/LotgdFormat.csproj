@@ -4,7 +4,7 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>0.6.0</Version>
+		<Version>0.7.0</Version>
 		<Authors>StringEpsilon</Authors>
 		<Summary>A C# implementation of the LotgD style formatting code for text.</Summary>
 		<PackageTags>lotgd</PackageTags>
@@ -12,9 +12,10 @@
 		<PackageProjectUrl>https://github.com/StringEpsilon/LotgdFormat</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/StringEpsilon/LotgdFormat</RepositoryUrl>
 		<RespositoryType>git</RespositoryType>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 	<ItemGroup>
-		<None Include="..\COPYING.md" Pack="true" PackagePath="/" />
-		<None Include="..\README.md" Pack="true" PackagePath="/" />
+		<None Include="..\COPYING.md" Pack="true" PackagePath="/"/>
+		<None Include="..\README.md" Pack="true" PackagePath="/"/>
 	</ItemGroup>
 </Project>

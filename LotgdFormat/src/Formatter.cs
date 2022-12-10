@@ -28,19 +28,21 @@ public class Formatter {
 
 		var index = this._nodes.Count - 1;
 		Node[] stack = new Node[index - this._lastColor];
+		var i = stack.Length - 1;
 		for (; index > this._lastColor; index--) {
 			var node = this._nodes[index];
 			if (node.Type == NodeType.Tag) {
 				if (this.IsTagOpen(node.Token)) {
-					stack[index] = node;
+					stack[i] = node;
+					i--;
 					this._nodes.Add(Node.CreateTagCloseNode(_codeDictionary[node.Token].Tag));
 					this._openTags[node.Token] = false;
 				}
 			}
 		}
 		this._nodes.Add(Node.CreateColorCloseNode());
-		for (; index < stack.Length; index++) {
-			this.AddNode(stack[index]);
+		for (; i < stack.Length; i++) {
+			this.AddNode(stack[i]);
 		}
 		this._lastColor = -1;
 	}
@@ -193,9 +195,12 @@ public class Formatter {
 		this.CloseColor();
 
 		foreach (var token in this._openTags.Keys) {
-			var code = this._codeDictionary[token];
-			if (code.Tag != null) {
-				this.AddNode(Node.CreateTagCloseNode(code.Tag));
+			if (this._openTags[token]) {
+				var code = this._codeDictionary[token];
+				if (code.Tag != null) {
+					this.AddNode(Node.CreateTagCloseNode(code.Tag));
+				}
+				this._openTags[token] = false;
 			}
 		}
 		return this;

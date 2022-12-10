@@ -135,6 +135,21 @@ public class Formatter {
 	}
 
 	/// <summary>
+	/// Wether or not the formatter is clear of text and open tags.
+	/// </summary>
+	public bool IsClear() {
+		return this._nodes.Count == 0
+			&& this._openTags.Values.All(y => y);
+	}
+
+	/// <summary>
+	/// Wether or not the formatter has pending markup or text to render.
+	/// </summary>
+	public bool HasContent() {
+		return this._nodes.Any();
+	}
+
+	/// <summary>
 	/// Clear all output and open tags.
 	/// </summary>
 	public Formatter Clear() {

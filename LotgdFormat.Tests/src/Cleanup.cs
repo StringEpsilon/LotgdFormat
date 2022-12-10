@@ -32,4 +32,20 @@ public class Cleanup {
 		Assert.Equal("", formatter.Clear().GetOutput());
 		Assert.Equal("", formatter.CloseOpenTags().GetOutput());
 	}
+
+
+	[Fact]
+	public void DoubleCloseOpenTags() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
+		});
+		var foo = formatter.AddText("`cThis is centered").GetOutput();
+		Assert.Equal("<center>This is centered", foo);
+		Assert.False(formatter.IsClear());
+		Assert.Equal(foo + "</center>", formatter.CloseOpenTags().GetOutput());
+		Assert.Equal(foo + "</center>", formatter.CloseOpenTags().GetOutput());
+		Assert.Equal("", formatter.Clear().GetOutput());
+		Assert.False(formatter.Clear().HasContent());
+		Assert.True(formatter.Clear().IsClear());
+	}
 }

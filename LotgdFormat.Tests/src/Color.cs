@@ -85,4 +85,27 @@ public class Color {
 
 		Assert.Equal("<span class=\"c64\">green</span><span class=\"c36\">red", result);
 	}
+
+	[Fact]
+	public void Immediate_Close() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode(){ Token = '@', Color = "00FF00"},
+			new LotgdFormatCode(){ Token = '$', Color = "FF0000"}
+		});
+		string result = formatter.AddText("`@`0Normal text").GetOutput();
+
+		Assert.Equal("Normal text", result);
+	}
+
+	[Fact]
+	public void Immediate_Close_OtherTags() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode(){ Token = '@', Color = "00FF00"},
+			new LotgdFormatCode(){ Token = '$', Color = "FF0000"},
+			new LotgdFormatCode(){ Token = 'b', Tag = "strong"}
+		});
+		string result = formatter.AddText("`b`@`0strong text").GetOutput();
+
+		Assert.Equal("<strong>strong text", result);
+	}
 }

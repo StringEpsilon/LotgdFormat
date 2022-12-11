@@ -27,6 +27,11 @@ public class Formatter {
 		}
 
 		var index = this._nodes.Count - 1;
+		if (index == this._lastColor) {
+			this._nodes.RemoveAt(this._lastColor);
+			this._lastColor = -1;
+			return;
+		}
 		Node[] stack = new Node[index - this._lastColor];
 		var i = stack.Length - 1;
 		for (; index > this._lastColor; index--) {

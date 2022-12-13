@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace LotgdFormat;
 
@@ -32,6 +33,12 @@ public class Formatter {
 			this._lastColor = -1;
 			return;
 		}
+		if (index - this._lastColor < 0) {
+			this._nodes.Add(Node.CreateColorCloseNode());
+			this._lastColor = -1;
+			return;
+		}
+
 		Node[] stack = new Node[index - this._lastColor];
 		var i = stack.Length - 1;
 		for (; index > this._lastColor; index--) {

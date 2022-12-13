@@ -108,4 +108,23 @@ public class Color {
 
 		Assert.Equal("<strong>strong text", result);
 	}
+
+	[Fact]
+	public void Does_Not_Crash() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode(){ Token = '@', Color = "00FF00"},
+			new LotgdFormatCode(){ Token = '$', Color = "FF0000"},
+			new LotgdFormatCode(){ Token = '&', Color = "FFFFFF"},
+			new LotgdFormatCode(){ Token = 'b', Tag = "strong"}
+		});
+		formatter.AddText("`0Dummy").GetOutput();
+		formatter.ClearText();
+		formatter.AddText("Dummy").GetOutput();
+		formatter.ClearText();
+		formatter.AddText("`0`&Dummy`0`&").GetOutput();
+		formatter.ClearText();
+		formatter.AddText("Dummy`0").GetOutput();
+		formatter.ClearText();
+		Assert.True(true);
+	}
 }

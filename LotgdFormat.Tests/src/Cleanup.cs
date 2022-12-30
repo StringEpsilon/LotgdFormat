@@ -48,4 +48,17 @@ public class Cleanup {
 		Assert.False(formatter.Clear().HasContent());
 		Assert.True(formatter.Clear().IsClear());
 	}
+
+	[Fact]
+	public void ColorCloseMultipleTexts() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode(){ Token = 'c', Tag = "center"},
+			new LotgdFormatCode(){ Token = '$', Color = "FF0000"},
+			new LotgdFormatCode(){ Token = '@', Color = "00FF00"},
+		});
+		var foo = formatter.AddText("`$").GetOutput();
+		formatter.ClearText();
+		foo += formatter.AddText("FooBar`0").GetOutput();
+		Assert.Equal("<span class=\"c36\">FooBar</span>", foo);
+	}
 }

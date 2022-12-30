@@ -28,7 +28,7 @@ public class Formatter {
 		}
 
 		var index = this._nodes.Count - 1;
-		if (index == this._lastColor) {
+		if (index == this._lastColor && this._nodes[_lastColor].Type == NodeType.Color) {
 			this._nodes.RemoveAt(this._lastColor);
 			this._lastColor = -1;
 			return;
@@ -53,7 +53,7 @@ public class Formatter {
 			}
 		}
 		this._nodes.Add(Node.CreateColorCloseNode());
-		for (; i < stack.Length; i++) {
+		for (i = 0; i < stack.Length; i++) {
 			this.AddNode(stack[i]);
 		}
 		this._lastColor = -1;
@@ -174,6 +174,7 @@ public class Formatter {
 	/// Clear current output, but keep memory of currently open tags.
 	/// </summary>
 	public Formatter ClearText() {
+
 		this._nodes.Clear();
 		return this;
 	}

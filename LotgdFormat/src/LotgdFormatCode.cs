@@ -2,6 +2,8 @@
 
 public class LotgdFormatCode {
 	private static readonly Node _invalidNode = new(NodeType.Invalid);
+	public LotgdFormatCode() {
+	}
 
 	/// <summary>
 	/// The single character token to that marks this formatting token.

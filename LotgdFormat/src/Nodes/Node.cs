@@ -3,17 +3,6 @@ using System.Web;
 
 namespace LotgdFormat;
 
-public enum NodeType {
-	Invalid,
-	Text,
-	Color,
-	ColorClose,
-	SelfClosing,
-	Tag,
-	TagClose,
-}
-
-
 public readonly struct Node {
 	public readonly NodeType Type;
 	public readonly string Output;
@@ -37,19 +26,23 @@ public readonly struct Node {
 	public static Node CreateColorNode(char token) {
 		return new Node(NodeType.Color, $"<span class=\"c{(int)token}\">");
 	}
+
 	public static Node CreateColorCloseNode() {
 		return new Node(NodeType.ColorClose, "</span>");
 	}
-	public static Node CreateTextNode(string Text, bool IsUnsafe) {
+
+	public static Node CreateTextNode(ReadOnlySpan<char> Text, bool IsUnsafe) {
 		string output = IsUnsafe
-			? Text
-			: HttpUtility.HtmlEncode(Text);
+			? Text.ToString()
+			: HttpUtility.HtmlEncode(Text.ToString());
 
 		return new Node(NodeType.Text, output);
 	}
+
 	public static Node CreateSelfClosingNode(string tag) {
 		return new Node(NodeType.SelfClosing, $"<{tag}/>");
 	}
+
 	public static Node CreateTagNode(char token, string tag, string? styles = null) {
 		string output;
 		if (styles == null) {

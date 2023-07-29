@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace LotgdFormat;
 
@@ -92,7 +91,7 @@ public class Formatter {
 		}
 	}
 
-	private void AddTextNode(string text, bool isUnsafe) {
+	private void AddTextNode(ReadOnlySpan<char> text, bool isUnsafe) {
 		this._nodes.Add(Node.CreateTextNode(text, isUnsafe));
 	}
 
@@ -102,38 +101,24 @@ public class Formatter {
 	}
 
 	private void Parse(string input, bool isUnsafe) {
-		int i = input.IndexOf('`');
-		if (i == -1) {
-			this.AddTextNode(input, isUnsafe);
-			return;
-		}
-
-		var lastToken = 0;
-
-		do {
-			char token = input[i + 1];
-			if (lastToken <= i - 1) {
-				this.AddTextNode(input.Substring(lastToken, i - lastToken), isUnsafe);
-			}
-			lastToken = i + 2;
-			switch (token) {
-				case '`':
-					this.AddTextNode("`", isUnsafe);
+		var enumerator = new TokenEnumerator(input);
+		foreach (var token in enumerator) {
+			switch (token.Token) {
+				case '\0':
 					break;
 				case '0':
 					this.CloseColor();
 					break;
 				default:
-					if (this._codeDictionary.TryGetValue(token, out var code)) {
+					if (this._codeDictionary.TryGetValue(token.Token, out var code)) {
 						this.AddNode(code.GetNode());
 					}
+
 					break;
 			}
-			i = input.IndexOf('`', lastToken);
-		} while (i > 0);
-
-		if (lastToken < input.Length) {
-			this.AddTextNode(input.Substring(lastToken), isUnsafe);
+			if (token.Text.Length != 0) {
+				this.AddTextNode(token.Text, isUnsafe);
+			}
 		}
 	}
 

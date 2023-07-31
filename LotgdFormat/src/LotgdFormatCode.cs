@@ -32,16 +32,23 @@ public class LotgdFormatCode {
 	/// </summary>
 	public bool SelfClosing { get; set; } = false;
 
+	private Node? _node = null;
+
 	internal Node GetNode() {
-		if (this.Color != null) {
-			return Node.CreateColorNode(this.Token);
-		};
-		if (this.Tag == null) {
-			return _invalidNode;
+		if (this._node != null) {
+			return this._node.Value;
 		}
-		return this.SelfClosing
-			? Node.CreateSelfClosingNode(this.Tag)
-			: Node.CreateTagNode(this.Token, this.Tag, this.Style);
+		if (this.Color != null) {
+			this._node = Node.CreateColorNode(this.Token);
+		} else if (this.Tag == null) {
+			this._node = _invalidNode;
+		} else {
+			this._node = this.SelfClosing
+				? Node.CreateSelfClosingNode(this.Tag)
+				: Node.CreateTagNode(this.Token, this.Tag, this.Style);
+		}
+
+		return _node.Value;
 	}
 }
 

@@ -1,19 +1,20 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Security.Permissions;
 
 namespace LotgdFormat;
 
 #nullable disable
 
 public class Formatter {
-	private readonly Dictionary<char, LotgdFormatCode> _codeDictionary;
+	private readonly LotgdFormatCode[] _codeLookup;
 	private readonly List<Node> _nodes = new();
-	private readonly Dictionary<char, bool> _openTags = new();
+	private readonly Dictionary<ushort, bool> _openTags = new();
 	private int _lastColor = -1;
 
 	public bool Color { get; set; } = true;
 
 	#region Private methods
-	private void SetTagOpenStatus(char token, bool open) {
+	private void SetTagOpenStatus(ushort token, bool open) {
 		if (!this._openTags.ContainsKey(token)) {
 			this._openTags.Add(token, open);
 		} else {
@@ -46,7 +47,7 @@ public class Formatter {
 				if (this.IsTagOpen(node.Token)) {
 					stack[i] = node;
 					i--;
-					this._nodes.Add(Node.CreateTagCloseNode(_codeDictionary[node.Token].Tag));
+					this._nodes.Add(Node.CreateTagCloseNode(_codeLookup[node.Token].Tag));
 					this._openTags[node.Token] = false;
 				}
 			}
@@ -66,7 +67,7 @@ public class Formatter {
 			}
 			case NodeType.Tag: {
 				if (this.IsTagOpen(node.Token)) {
-					this._nodes.Add(Node.CreateTagCloseNode(_codeDictionary[node.Token].Tag));
+					this._nodes.Add(Node.CreateTagCloseNode(_codeLookup[node.Token].Tag));
 					this._openTags[node.Token] = false;
 				} else {
 					this._nodes.Add(node);
@@ -110,10 +111,9 @@ public class Formatter {
 					this.CloseColor();
 					break;
 				default:
-					if (this._codeDictionary.TryGetValue(token.Token, out var code)) {
-						this.AddNode(code.GetNode());
+					if (token.Token < this._codeLookup.Length && this._codeLookup[token.Token] != null) {
+						this.AddNode(this._codeLookup[token.Token].GetNode());
 					}
-
 					break;
 			}
 			if (token.Text.Length != 0) {
@@ -125,9 +125,10 @@ public class Formatter {
 	#endregion
 
 	public Formatter(List<LotgdFormatCode> codes) {
-		_codeDictionary = new Dictionary<char, LotgdFormatCode>(codes.Count);
+		ushort highestToken = codes.Max(y => (ushort)y.Token);
+		this._codeLookup = new LotgdFormatCode[highestToken+1];
 		foreach (var code in codes) {
-			_codeDictionary.Add(code.Token, code);
+			_codeLookup[(ushort)code.Token] = code;
 		}
 	}
 
@@ -209,7 +210,7 @@ public class Formatter {
 
 		foreach (var token in this._openTags.Keys) {
 			if (this._openTags[token]) {
-				var code = this._codeDictionary[token];
+				var code = this._codeLookup[token];
 				if (code.Tag != null) {
 					this.AddNode(Node.CreateTagCloseNode(code.Tag));
 				}

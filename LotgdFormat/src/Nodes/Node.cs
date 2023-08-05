@@ -48,7 +48,7 @@ public readonly struct Node {
 		if (styles == null) {
 			output = $"<{tag}>";
 		} else {
-			output = $"<{tag} style=\"{styles}\">";
+			output = $"<{tag} {styles}>";
 		}
 		return new Node(NodeType.Tag, output, token);
 	}

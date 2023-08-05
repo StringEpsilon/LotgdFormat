@@ -27,11 +27,21 @@ public class Tag {
 	[Fact]
 	public void Renders_Style() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = 'h', Tag = "span", Style="font-size: larger"}
+			new LotgdFormatCode(){ Token = 'h', Tag = "span", Style="style=\"font-size: larger\""}
 		});
 		string result = formatter.AddText("`hBig Text`h").GetOutput();
 
 		Assert.Equal("<span style=\"font-size: larger\">Big Text</span>", result);
+	}
+
+	[Fact]
+	public void Renders_Class() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode(){ Token = 'h', Tag = "span", Style="class=\"headline\""}
+		});
+		string result = formatter.AddText("`hBig Text`h").GetOutput();
+
+		Assert.Equal("<span class=\"headline\">Big Text</span>", result);
 	}
 
 	[Fact]

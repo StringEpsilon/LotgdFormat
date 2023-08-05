@@ -1,3 +1,8 @@
+# 0.8.0:
+
+Added support for privileged codes. Codes with the `Privileged` flag set will be ignored in all texts by default, unless `AddText()` is called with the new optional `isPriviliged` parameter set to true.
+
+
 # 0.7.5
 
 - Changed how the `style` on a node is rendered to match the original implementation.

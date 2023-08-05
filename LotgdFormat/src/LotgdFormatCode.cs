@@ -32,6 +32,11 @@ public class LotgdFormatCode {
 	/// </summary>
 	public bool SelfClosing { get; set; } = false;
 
+	/// <summary>
+	/// Code may only apply to text added with the isPriviliged flag set. Otherwise the token is ignored.
+	/// </summary>
+	public bool Privileged { get; set; } = false;
+
 	private Node? _node = null;
 
 	internal Node GetNode() {

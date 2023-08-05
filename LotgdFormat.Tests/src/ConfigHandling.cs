@@ -23,4 +23,19 @@ public class InvalidConfig {
 
 		Assert.Equal("<span class=\"c69\">This is not bold.</span>", result);
 	}
+
+	[Fact]
+	public void Respects_Priviliged() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode(){ Token = 'H', Tag = "span", Style = "class=\"navhi\"", Privileged = true}
+		});
+		string result = formatter.AddText("This is `Hadmin reserved.`H").GetOutput();
+
+		Assert.Equal("This is admin reserved.", result);
+
+		formatter.Clear();
+		string result2 = formatter.AddText("This is `Hadmin reserved.`H", isPrivileged: true).GetOutput();
+		Assert.Equal("This is <span class=\"navhi\">admin reserved.</span>", result2);
+
+	}
 }

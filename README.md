@@ -15,6 +15,41 @@ This library is based on the `appoencode()` function found in LotgD 0.9.7. Drago
 - Eliwood
 - Talion
 
+## Known issues
+
+The original handles tags followed by "\`0" differently than this library. I am not quite sure if the original has a bug there or if the behavior should be replicated here.
+
+Example - original:
+```
+input:
+`$red`Hnavhi`0 still red`0 still red.
+
+output (indented for easier reading):
+<span class="c36">
+	red
+	<span class='navhi'>
+		navhi
+	</span>
+	still red
+	still red.
+```
+
+Same input in this libary:
+```
+input:
+`$red`Hnavhi`0 still red`0 still red.
+
+output (indented for easier reading):
+<span class=\"c36\">
+	red
+	<span class=\"navhi\">
+		navhi
+	</span>
+</span>
+<span class=\"navhi\">
+	still red still red.
+```
+
 ## Code syntax
 
 Every code is marked with a backtick ` and consists of a single arbitrary character.

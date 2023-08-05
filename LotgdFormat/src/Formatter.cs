@@ -101,7 +101,7 @@ public class Formatter {
 		return result;
 	}
 
-	private void Parse(string input, bool isUnsafe) {
+	private void Parse(string input, bool isUnsafe, bool isPrivileged ) {
 		var enumerator = new TokenEnumerator(input);
 		foreach (var token in enumerator) {
 			switch (token.Token) {
@@ -112,7 +112,9 @@ public class Formatter {
 					break;
 				default:
 					if (token.Token < this._codeLookup.Length && this._codeLookup[token.Token] != null) {
-						this.AddNode(this._codeLookup[token.Token].GetNode());
+						if (!this._codeLookup[token.Token].Privileged || isPrivileged) {
+							this.AddNode(this._codeLookup[token.Token].GetNode());
+						}
 					}
 					break;
 			}
@@ -178,8 +180,8 @@ public class Formatter {
 	/// <returns>
 	/// The same instance of the formatter for easy chaining.
 	/// </returns>
-	public Formatter AddText(string input, bool isUnsafe = false) {
-		this.Parse(input, isUnsafe);
+	public Formatter AddText(string input, bool isUnsafe = false,  bool isPrivileged = false) {
+		this.Parse(input, isUnsafe, isPrivileged);
 		return this;
 	}
 

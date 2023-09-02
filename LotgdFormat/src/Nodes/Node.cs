@@ -39,11 +39,11 @@ public readonly struct Node {
 		return new Node(NodeType.Text, output);
 	}
 
-	public static Node CreateSelfClosingNode(string tag) {
+	public static Node CreateSelfClosingNode(in string tag) {
 		return new Node(NodeType.SelfClosing, $"<{tag}/>");
 	}
 
-	public static Node CreateTagNode(char token, string tag, string? styles = null) {
+	public static Node CreateTagNode(char token, in string tag, string? styles = null) {
 		string output;
 		if (styles == null) {
 			output = $"<{tag}>";
@@ -53,7 +53,7 @@ public readonly struct Node {
 		return new Node(NodeType.Tag, output, token);
 	}
 
-	public static Node CreateTagCloseNode(string tag) {
+	public static Node CreateTagCloseNode(in string tag) {
 		return new Node(NodeType.TagClose, $"</{tag}>");
 	}
 

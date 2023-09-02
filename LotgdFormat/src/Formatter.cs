@@ -103,6 +103,7 @@ public class Formatter {
 
 	private void Parse(string input, bool isUnsafe, bool isPrivileged ) {
 		var enumerator = new TokenEnumerator(input);
+
 		foreach (var token in enumerator) {
 			switch (token.Token) {
 				case '\0':
@@ -115,6 +116,8 @@ public class Formatter {
 						if (!this._codeLookup[token.Token].Privileged || isPrivileged) {
 							this.AddNode(this._codeLookup[token.Token].GetNode());
 						}
+					} else {
+						this.AddTextNode(token.Token.ToString(), isUnsafe);
 					}
 					break;
 			}
@@ -193,7 +196,7 @@ public class Formatter {
 		for (int i = 0; i < this._nodes.Count; i++) {
 			totalLength += _nodes[i].Output.Length;
 		}
-		Span<char> ouputSpan = new char[totalLength];
+		Span<char> ouputSpan = stackalloc char[totalLength];
 		int index = 0;
 		int nodeLength;
 		for (int i = 0; i < this._nodes.Count; i++) {

@@ -1,3 +1,9 @@
+# 0.8.1:
+- Fixed handling of unknown tokens.
+	Before: "\`_text" -> "text"
+	Now: "\`_text" -> "_text"
+	Added a test for this also.
+
 # 0.8.0:
 
 Added support for privileged codes. Codes with the `Privileged` flag set will be ignored in all texts by default, unless `AddText()` is called with the new optional `isPriviliged` parameter set to true.

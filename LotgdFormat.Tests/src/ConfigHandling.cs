@@ -1,7 +1,7 @@
+using Xunit;
+
 namespace LotgdFormat.Tests;
 
-using LotgdFormat;
-using Xunit;
 
 public class InvalidConfig {
 	[Fact]
@@ -36,6 +36,16 @@ public class InvalidConfig {
 		formatter.Clear();
 		string result2 = formatter.AddText("This is `Hadmin reserved.`H", isPrivileged: true).GetOutput();
 		Assert.Equal("This is <span class=\"navhi\">admin reserved.</span>", result2);
+	}
 
+	[Fact]
+	public void Unknonw_Token_Is_Text() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode(){ Token = '@', Color = "00FF00"},
+			new LotgdFormatCode(){ Token = '$', Color = "FF0000"}
+		});
+		string result = formatter.AddText("regular `@green`0 `_regular").GetOutput();
+
+		Assert.Equal("regular <span class=\"c64\">green</span> _regular", result);
 	}
 }

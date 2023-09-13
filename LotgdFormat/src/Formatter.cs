@@ -1,20 +1,18 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Security.Permissions;
-
 namespace LotgdFormat;
 
 #nullable disable
 
 public class Formatter {
-	private readonly LotgdFormatCode[] _codeLookup;
+	private readonly HashArray<LotgdFormatCode> _codeLookup;
 	private readonly List<Node> _nodes = new();
-	private readonly Dictionary<ushort, bool> _openTags = new();
+	private readonly Dictionary<char, bool> _openTags = new();
 	private int _lastColor = -1;
 
 	public bool Color { get; set; } = true;
 
 	#region Private methods
-	private void SetTagOpenStatus(ushort token, bool open) {
+	private void SetTagOpenStatus(char token, bool open) {
 		if (!this._openTags.ContainsKey(token)) {
 			this._openTags.Add(token, open);
 		} else {
@@ -101,7 +99,7 @@ public class Formatter {
 		return result;
 	}
 
-	private void Parse(string input, bool isUnsafe, bool isPrivileged ) {
+	private void Parse(string input, bool isUnsafe, bool isPrivileged) {
 		var enumerator = new TokenEnumerator(input);
 
 		foreach (var token in enumerator) {
@@ -112,9 +110,10 @@ public class Formatter {
 					this.CloseColor();
 					break;
 				default:
-					if (token.Token < this._codeLookup.Length && this._codeLookup[token.Token] != null) {
-						if (!this._codeLookup[token.Token].Privileged || isPrivileged) {
-							this.AddNode(this._codeLookup[token.Token].GetNode());
+					var code = _codeLookup[token.Token];
+					if (code != null) {
+						if (!code.Privileged || isPrivileged) {
+							this.AddNode(code.GetNode());
 						}
 					} else {
 						this.AddTextNode(token.Token.ToString(), isUnsafe);
@@ -129,12 +128,16 @@ public class Formatter {
 
 	#endregion
 
-	public Formatter(List<LotgdFormatCode> codes) {
-		ushort highestToken = codes.Max(y => (ushort)y.Token);
-		this._codeLookup = new LotgdFormatCode[highestToken+1];
-		foreach (var code in codes) {
-			_codeLookup[(ushort)code.Token] = code;
+	public Formatter(List<LotgdFormatCode> config) {
+		ushort highestToken = config.Max(y => (ushort)y.Token);
+		var codeArray = new LotgdFormatCode[config.Count];
+		Span<char> keys = stackalloc char[config.Count];
+		for (int i = 0; i < config.Count; i++) {
+			keys[i] = config[i].Token;
+			codeArray[i] = config[i];
 		}
+
+		this._codeLookup = new HashArray<LotgdFormatCode>(keys, codeArray);
 	}
 
 	/// <summary>
@@ -183,7 +186,7 @@ public class Formatter {
 	/// <returns>
 	/// The same instance of the formatter for easy chaining.
 	/// </returns>
-	public Formatter AddText(string input, bool isUnsafe = false,  bool isPrivileged = false) {
+	public Formatter AddText(string input, bool isUnsafe = false, bool isPrivileged = false) {
 		this.Parse(input, isUnsafe, isPrivileged);
 		return this;
 	}

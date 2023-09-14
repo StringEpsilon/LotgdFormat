@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace LotgdFormat;
 
 /// <summary>
@@ -53,15 +51,3 @@ internal ref struct TokenEnumerator {
 
 	public FormatToken Current { get => _current;  }
 }
-
-// | Method |     Mean |   Error |  StdDev |   Gen0 | Allocated |
-// |  Parse | 274.0 ns | 1.52 ns | 1.42 ns | 0.0153 |     256 B |
-
-// | Method |     Mean |   Error |  StdDev |   Gen0 | Allocated |
-// |------- |---------:|--------:|--------:|-------:|----------:|
-// |  Parse | 269.1 ns | 1.58 ns | 1.40 ns | 0.0153 |     256 B |
-
-// |              Method |       Mean |     Error |    StdDev |   Gen0 |   Gen1 | Allocated |
-// |-------------------- |-----------:|----------:|----------:|-------:|-------:|----------:|
-// |               Parse |   274.4 ns |   2.01 ns |   1.88 ns | 0.0153 |      - |     256 B |
-// | FormatRealistic_New | 8,099.4 ns | 156.56 ns | 153.76 ns | 1.8616 | 0.0916 |   31392 B |

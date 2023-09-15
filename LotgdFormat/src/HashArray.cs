@@ -61,7 +61,7 @@ internal class HashArray<T> where T : class {
 		return (input + this._hashIndex).GetHashCode() & (this._bucket.Length);
 	}
 
-	internal HashArray(ReadOnlySpan<char> keys, T[] data ) {
+	internal HashArray(ReadOnlySpan<char> keys, Span<T> data ) {
 		int bucketSize = Math.Max(127,GetSize((uint)data.Length));
 		this._hashIndex = FindHashIndex(keys, bucketSize);
 		this._bucket = new T[bucketSize];

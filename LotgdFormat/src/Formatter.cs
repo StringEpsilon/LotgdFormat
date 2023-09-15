@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 namespace LotgdFormat;
 
 #nullable disable
@@ -129,14 +130,11 @@ public class Formatter {
 	#endregion
 
 	public Formatter(List<LotgdFormatCode> config) {
-		ushort highestToken = config.Max(y => (ushort)y.Token);
-		var codeArray = new LotgdFormatCode[config.Count];
+		var codeArray = CollectionsMarshal.AsSpan(config);
 		Span<char> keys = stackalloc char[config.Count];
-		for (int i = 0; i < config.Count; i++) {
-			keys[i] = config[i].Token;
-			codeArray[i] = config[i];
+		for (int i = 0; i < codeArray.Length; i++) {
+			keys[i] = codeArray[i].Token;
 		}
-
 		this._codeLookup = new HashArray<LotgdFormatCode>(keys, codeArray);
 	}
 

@@ -1,3 +1,6 @@
+# 0.9.0-preview:
+- Speedup constructor and reduce memory footprint.
+
 # 0.8.1:
 - Fixed handling of unknown tokens.
 	Before: "\`_text" -> "text"

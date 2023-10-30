@@ -1,4 +1,5 @@
-# 0.9.0-preview:
+# 0.9.0:
+- Added an overload to `Formatter.AddText` that accepts a `ReadonlySpan<char>`
 - Speedup constructor and reduce memory footprint.
 
 # 0.8.1:

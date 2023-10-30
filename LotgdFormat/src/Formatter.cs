@@ -100,7 +100,7 @@ public class Formatter {
 		return result;
 	}
 
-	private void Parse(string input, bool isUnsafe, bool isPrivileged) {
+	private void Parse(ReadOnlySpan<char> input, bool isUnsafe, bool isPrivileged) {
 		var enumerator = new TokenEnumerator(input);
 
 		foreach (var token in enumerator) {
@@ -185,6 +185,24 @@ public class Formatter {
 	/// The same instance of the formatter for easy chaining.
 	/// </returns>
 	public Formatter AddText(string input, bool isUnsafe = false, bool isPrivileged = false) {
+		this.Parse(input, isUnsafe, isPrivileged);
+		return this;
+	}
+
+	/// <summary>
+	/// Add text to the formatter.
+	/// </summary>
+	/// <param name="input">
+	/// The text to parse and add to the output.
+	/// </param>
+	/// <param name="isUnsafe">
+	/// If set to true, the formatter will pass through HTML content without escapting it.
+	/// Use with caution.
+	/// </param>
+	/// <returns>
+	/// The same instance of the formatter for easy chaining.
+	/// </returns>
+	public Formatter AddText(ReadOnlySpan<char> input, bool isUnsafe = false, bool isPrivileged = false) {
 		this.Parse(input, isUnsafe, isPrivileged);
 		return this;
 	}

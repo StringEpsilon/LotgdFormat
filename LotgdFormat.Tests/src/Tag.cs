@@ -9,7 +9,8 @@ public class Tag {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
 		});
-		string result = formatter.AddText("`cThis is centered").GetOutput();
+		formatter.AddText("`cThis is centered");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("<center>This is centered", result);
 	}
@@ -19,7 +20,8 @@ public class Tag {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
 		});
-		string result = formatter.AddText("`cThis is centered`cThis isn't").GetOutput();
+		formatter.AddText("`cThis is centered`cThis isn't");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("<center>This is centered</center>This isn&#39;t", result);
 	}
@@ -29,7 +31,8 @@ public class Tag {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'h', Tag = "span", Style="style=\"font-size: larger\""}
 		});
-		string result = formatter.AddText("`hBig Text`h").GetOutput();
+		formatter.AddText("`hBig Text`h");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("<span style=\"font-size: larger\">Big Text</span>", result);
 	}
@@ -39,7 +42,8 @@ public class Tag {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'h', Tag = "span", Style="class=\"headline\""}
 		});
-		string result = formatter.AddText("`hBig Text`h").GetOutput();
+		formatter.AddText("`hBig Text`h");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("<span class=\"headline\">Big Text</span>", result);
 	}
@@ -49,7 +53,9 @@ public class Tag {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
 		});
-		string result = formatter.AddText("`cThis is centered").CloseOpenTags().GetOutput();
+		formatter.AddText("`cThis is centered");
+		formatter.CloseOpenTags();
+		string result = formatter.GetOutput();
 		Assert.Equal("<center>This is centered</center>", result);
 	}
 }

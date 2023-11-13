@@ -9,7 +9,8 @@ public class Color {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '@', Color = "00FF00"}
 		});
-		string result = formatter.AddText("This is White `@this is green.").GetOutput();
+		formatter.AddText("This is White `@this is green.");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("This is White <span class=\"c64\">this is green.", result);
 	}
@@ -19,7 +20,8 @@ public class Color {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '@', Color = "00FF00"}
 		});
-		string result = formatter.AddText("`0This is plaintext.").GetOutput();
+		formatter.AddText("`0This is plaintext.");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("This is plaintext.", result);
 	}
@@ -31,7 +33,8 @@ public class Color {
 			new LotgdFormatCode(){ Token = '$', Color = "FF0000"}
 		});
 		formatter.Color = false;
-		string result = formatter.AddText("`$red `@green `$red `@green").GetOutput();
+		formatter.AddText("`$red `@green `$red `@green");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("red green red green", result);
 	}
@@ -41,11 +44,13 @@ public class Color {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '@', Color = "00FF00"}
 		});
-		string result = formatter.AddText("This is White `@this is green.").GetOutput();
+		formatter.AddText("This is White `@this is green.");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("This is White <span class=\"c64\">this is green.", result);
 
-		result = formatter.AddText(" This is still green.").GetOutput();
+		formatter.AddText(" This is still green.");
+		result = formatter.GetOutput();
 		Assert.Equal("This is White <span class=\"c64\">this is green. This is still green.", result);
 	}
 
@@ -55,11 +60,13 @@ public class Color {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '@', Color = "00FF00"}
 		});
-		string result = formatter.AddText("This is White `@this is green.").GetOutput();
+		formatter.AddText("This is White `@this is green.");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("This is White <span class=\"c64\">this is green.", result);
 
-		result = formatter.AddText("`0 This is no longer green.").GetOutput();
+		formatter.AddText("`0 This is no longer green.");
+		result = formatter.GetOutput();
 		Assert.Equal("This is White <span class=\"c64\">this is green.</span> This is no longer green.", result);
 	}
 
@@ -68,10 +75,12 @@ public class Color {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '@', Color = "00FF00"}
 		});
-		string result = formatter.AddText("`@green").GetOutput();
+		formatter.AddText("`@green");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("<span class=\"c64\">green", result);
-		result = formatter.CloseOpenTags().GetOutput();
+		formatter.CloseOpenTags();
+		result = formatter.GetOutput();
 		Assert.Equal("<span class=\"c64\">green</span>", result);
 	}
 
@@ -81,7 +90,8 @@ public class Color {
 			new LotgdFormatCode(){ Token = '@', Color = "00FF00"},
 			new LotgdFormatCode(){ Token = '$', Color = "FF0000"}
 		});
-		string result = formatter.AddText("`@green`$red").GetOutput();
+		formatter.AddText("`@green`$red");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("<span class=\"c64\">green</span><span class=\"c36\">red", result);
 	}
@@ -92,7 +102,8 @@ public class Color {
 			new LotgdFormatCode(){ Token = '@', Color = "00FF00"},
 			new LotgdFormatCode(){ Token = '$', Color = "FF0000"}
 		});
-		string result = formatter.AddText("`@`0Normal text").GetOutput();
+		formatter.AddText("`@`0Normal text");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("Normal text", result);
 	}
@@ -104,7 +115,8 @@ public class Color {
 			new LotgdFormatCode(){ Token = '$', Color = "FF0000"},
 			new LotgdFormatCode(){ Token = 'b', Tag = "strong"}
 		});
-		string result = formatter.AddText("`b`@`0strong text").GetOutput();
+		formatter.AddText("`b`@`0strong text");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("<strong>strong text", result);
 	}
@@ -117,13 +129,17 @@ public class Color {
 			new LotgdFormatCode(){ Token = '&', Color = "FFFFFF"},
 			new LotgdFormatCode(){ Token = 'b', Tag = "strong"}
 		});
-		formatter.AddText("`0Dummy").GetOutput();
+		formatter.AddText("`0Dummy");
+		formatter.GetOutput();
 		formatter.ClearText();
-		formatter.AddText("Dummy").GetOutput();
+		formatter.AddText("Dummy");
+		formatter.GetOutput();
 		formatter.ClearText();
-		formatter.AddText("`0`&Dummy`0`&").GetOutput();
+		formatter.AddText("`0`&Dummy`0`&");
+		formatter.GetOutput();
 		formatter.ClearText();
-		formatter.AddText("Dummy`0").GetOutput();
+		formatter.AddText("Dummy`0");
+		formatter.GetOutput();
 		formatter.ClearText();
 		Assert.True(true);
 	}

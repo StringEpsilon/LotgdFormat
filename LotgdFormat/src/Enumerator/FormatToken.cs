@@ -6,7 +6,7 @@ namespace LotgdFormat;
 internal ref struct FormatToken {
 	internal FormatToken(ReadOnlySpan<char> text, char token) {
 		Text = text;
-		Token = token;
+		Identifier = token;
 	}
 
 	internal FormatToken(ReadOnlySpan<char> text) {
@@ -14,6 +14,6 @@ internal ref struct FormatToken {
 	}
 
 	internal ReadOnlySpan<char> Text;
-	internal char Token;
+	internal char Identifier;
 }
 

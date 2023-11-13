@@ -1,3 +1,13 @@
+# 0.10.0:
+
+**BREAKING:**
+- Formatter methods no longer return the instance.
+
+**Regular changes:**
+- A small optimization in the parsing (<1% speedup)
+- Skip parsing step entirely if input is null or empty
+- Do not emit a tag if it's immediately closed.
+
 # 0.9.0:
 - Added an overload to `Formatter.AddText` that accepts a `ReadonlySpan<char>`
 - Speedup constructor and reduce memory footprint.

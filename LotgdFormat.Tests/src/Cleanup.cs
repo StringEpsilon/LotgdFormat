@@ -9,7 +9,8 @@ public class Cleanup {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
 		});
-		Assert.Equal("<center>This is centered", formatter.AddText("`cThis is centered").GetOutput());
+		formatter.AddText("`cThis is centered");
+		Assert.Equal("<center>This is centered", formatter.GetOutput());
 		Assert.Equal("<center>This is centered", formatter.GetOutput());
 	}
 
@@ -18,9 +19,12 @@ public class Cleanup {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
 		});
-		Assert.Equal("<center>This is centered", formatter.AddText("`cThis is centered").GetOutput());
-		Assert.Equal("", formatter.ClearText().GetOutput());
-		Assert.Equal("</center>", formatter.CloseOpenTags().GetOutput());
+		formatter.AddText("`cThis is centered");
+		Assert.Equal("<center>This is centered", formatter.GetOutput());
+		formatter.ClearText();
+		Assert.Equal("", formatter.GetOutput());
+		formatter.CloseOpenTags();
+		Assert.Equal("</center>", formatter.GetOutput());
 	}
 
 	[Fact]
@@ -28,9 +32,12 @@ public class Cleanup {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
 		});
-		Assert.Equal("<center>This is centered", formatter.AddText("`cThis is centered").GetOutput());
-		Assert.Equal("", formatter.Clear().GetOutput());
-		Assert.Equal("", formatter.CloseOpenTags().GetOutput());
+		formatter.AddText("`cThis is centered");
+		Assert.Equal("<center>This is centered", formatter.GetOutput());
+		formatter.Clear();
+		Assert.Equal("", formatter.GetOutput());
+		formatter.CloseOpenTags();
+		Assert.Equal("", formatter.GetOutput());
 	}
 
 
@@ -39,14 +46,20 @@ public class Cleanup {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
 		});
-		var foo = formatter.AddText("`cThis is centered").GetOutput();
+		formatter.AddText("`cThis is centered");
+		var foo = formatter.GetOutput();
 		Assert.Equal("<center>This is centered", foo);
 		Assert.False(formatter.IsClear());
-		Assert.Equal(foo + "</center>", formatter.CloseOpenTags().GetOutput());
-		Assert.Equal(foo + "</center>", formatter.CloseOpenTags().GetOutput());
-		Assert.Equal("", formatter.Clear().GetOutput());
-		Assert.False(formatter.Clear().HasContent());
-		Assert.True(formatter.Clear().IsClear());
+		formatter.CloseOpenTags();
+		Assert.Equal(foo + "</center>", formatter.GetOutput());
+		formatter.CloseOpenTags();
+		Assert.Equal(foo + "</center>", formatter.GetOutput());
+		formatter.Clear();
+		Assert.Equal("", formatter.GetOutput());
+		formatter.Clear();
+		Assert.False(formatter.HasContent());
+		formatter.Clear();
+		Assert.True(formatter.IsClear());
 	}
 
 	[Fact]
@@ -56,9 +69,11 @@ public class Cleanup {
 			new LotgdFormatCode(){ Token = '$', Color = "FF0000"},
 			new LotgdFormatCode(){ Token = '@', Color = "00FF00"},
 		});
-		var foo = formatter.AddText("`$").GetOutput();
+		formatter.AddText("`$");
+		var foo = formatter.GetOutput();
 		formatter.ClearText();
-		foo += formatter.AddText("FooBar`0").GetOutput();
+		formatter.AddText("FooBar`0");
+		foo += formatter.GetOutput();
 		Assert.Equal("<span class=\"c36\">FooBar</span>", foo);
 	}
 }

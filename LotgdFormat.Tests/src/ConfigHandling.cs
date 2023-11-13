@@ -9,7 +9,8 @@ public class InvalidConfig {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'E', Tag = null, Color = null}
 		});
-		string result = formatter.AddText("`EThis is defective`0").GetOutput();
+		formatter.AddText("`EThis is defective`0");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("This is defective", result);
 	}
@@ -19,7 +20,8 @@ public class InvalidConfig {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'E', Tag = "b", Color = "FF0000"}
 		});
-		string result = formatter.AddText("`EThis is not bold.`0").GetOutput();
+		formatter.AddText("`EThis is not bold.`0");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("<span class=\"c69\">This is not bold.</span>", result);
 	}
@@ -29,12 +31,14 @@ public class InvalidConfig {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'H', Tag = "span", Style = "class=\"navhi\"", Privileged = true}
 		});
-		string result = formatter.AddText("This is `Hadmin reserved.`H").GetOutput();
+		formatter.AddText("This is `Hadmin reserved.`H");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("This is admin reserved.", result);
 
 		formatter.Clear();
-		string result2 = formatter.AddText("This is `Hadmin reserved.`H", isPrivileged: true).GetOutput();
+		formatter.AddText("This is `Hadmin reserved.`H", isPrivileged: true);
+		string result2 = formatter.GetOutput();
 		Assert.Equal("This is <span class=\"navhi\">admin reserved.</span>", result2);
 	}
 
@@ -44,7 +48,8 @@ public class InvalidConfig {
 			new LotgdFormatCode(){ Token = '@', Color = "00FF00"},
 			new LotgdFormatCode(){ Token = '$', Color = "FF0000"}
 		});
-		string result = formatter.AddText("regular `@green`0 `_regular").GetOutput();
+		formatter.AddText("regular `@green`0 `_regular");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("regular <span class=\"c64\">green</span> _regular", result);
 	}

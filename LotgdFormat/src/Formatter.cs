@@ -2,14 +2,13 @@
 using System.Runtime.InteropServices;
 namespace LotgdFormat;
 
-#nullable disable
+#nullable enable
 
 public class Formatter {
 	private readonly HashArray<LotgdFormatCode> _codeLookup;
 	private readonly List<Node> _nodes = new();
 	private readonly Dictionary<char, bool> _openTags = new();
 	private int _lastColor = -1;
-
 	public bool Color { get; set; } = true;
 
 	#region Private methods
@@ -38,15 +37,16 @@ public class Formatter {
 			return;
 		}
 
-		Node[] stack = new Node[index - this._lastColor];
+		Span<Node> stack = new Node[index - this._lastColor];
 		var i = stack.Length - 1;
 		for (; index > this._lastColor; index--) {
 			var node = this._nodes[index];
 			if (node.Type == NodeType.Tag) {
-				if (this.IsTagOpen(node.Token)) {
+				var code = _codeLookup[node.Token];
+				if (this.IsTagOpen(node.Token) && code?.Tag != null) {
 					stack[i] = node;
 					i--;
-					this._nodes.Add(Node.CreateTagCloseNode(_codeLookup[node.Token].Tag));
+					this._nodes.Add(Node.CreateTagCloseNode(code.Tag));
 					this._openTags[node.Token] = false;
 				}
 			}
@@ -65,9 +65,14 @@ public class Formatter {
 				return;
 			}
 			case NodeType.Tag: {
-				if (this.IsTagOpen(node.Token)) {
-					this._nodes.Add(Node.CreateTagCloseNode(_codeLookup[node.Token].Tag));
-					this._openTags[node.Token] = false;
+				var code = _codeLookup[node.Token];
+				if (code?.Tag != null && this.IsTagOpen(node.Token)) {
+					if (this._nodes.Last().Token == node.Token) {
+						this._nodes.RemoveAt(this._nodes.Count-1);
+					} else {
+						this._nodes.Add(Node.CreateTagCloseNode(code.Tag));
+						this._openTags[node.Token] = false;
+					}
 				} else {
 					this._nodes.Add(node);
 					this.SetTagOpenStatus(node.Token, true);
@@ -104,20 +109,20 @@ public class Formatter {
 		var enumerator = new TokenEnumerator(input);
 
 		foreach (var token in enumerator) {
-			switch (token.Token) {
+			switch (token.Identifier) {
 				case '\0':
 					break;
 				case '0':
 					this.CloseColor();
 					break;
 				default:
-					var code = _codeLookup[token.Token];
+					var code = _codeLookup[token.Identifier];
 					if (code != null) {
 						if (!code.Privileged || isPrivileged) {
 							this.AddNode(code.GetNode());
 						}
 					} else {
-						this.AddTextNode(token.Token.ToString(), isUnsafe);
+						this.AddTextNode(token.Identifier.ToString(), isUnsafe);
 					}
 					break;
 			}
@@ -156,19 +161,16 @@ public class Formatter {
 	/// <summary>
 	/// Clear all output and open tags.
 	/// </summary>
-	public Formatter Clear() {
+	public void Clear() {
 		this.ClearText();
 		this._openTags.Clear();
-		return this;
 	}
 
 	/// <summary>
 	/// Clear current output, but keep memory of currently open tags.
 	/// </summary>
-	public Formatter ClearText() {
-
+	public void ClearText() {
 		this._nodes.Clear();
-		return this;
 	}
 
 	/// <summary>
@@ -181,12 +183,10 @@ public class Formatter {
 	/// If set to true, the formatter will pass through HTML content without escapting it.
 	/// Use with caution.
 	/// </param>
-	/// <returns>
-	/// The same instance of the formatter for easy chaining.
-	/// </returns>
-	public Formatter AddText(string input, bool isUnsafe = false, bool isPrivileged = false) {
-		this.Parse(input, isUnsafe, isPrivileged);
-		return this;
+	public void AddText(string input, bool isUnsafe = false, bool isPrivileged = false) {
+		if (input == null || input.Length != 0) {
+			this.Parse(input, isUnsafe, isPrivileged);
+		}
 	}
 
 	/// <summary>
@@ -199,12 +199,10 @@ public class Formatter {
 	/// If set to true, the formatter will pass through HTML content without escapting it.
 	/// Use with caution.
 	/// </param>
-	/// <returns>
-	/// The same instance of the formatter for easy chaining.
-	/// </returns>
-	public Formatter AddText(ReadOnlySpan<char> input, bool isUnsafe = false, bool isPrivileged = false) {
-		this.Parse(input, isUnsafe, isPrivileged);
-		return this;
+	public void AddText(ReadOnlySpan<char> input, bool isUnsafe = false, bool isPrivileged = false) {
+		if (input.Length != 0) {
+			this.Parse(input, isUnsafe, isPrivileged);
+		}
 	}
 
 	/// <summary>
@@ -229,18 +227,17 @@ public class Formatter {
 	/// <summary>
 	/// Close the currently open tags.
 	/// </summary>
-	public Formatter CloseOpenTags() {
+	public void CloseOpenTags() {
 		this.CloseColor();
 
 		foreach (var token in this._openTags.Keys) {
 			if (this._openTags[token]) {
 				var code = this._codeLookup[token];
-				if (code.Tag != null) {
+				if (code?.Tag != null) {
 					this.AddNode(Node.CreateTagCloseNode(code.Tag));
 				}
 				this._openTags[token] = false;
 			}
 		}
-		return this;
 	}
 }

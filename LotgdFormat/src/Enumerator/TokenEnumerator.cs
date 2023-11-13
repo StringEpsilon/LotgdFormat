@@ -35,16 +35,16 @@ internal ref struct TokenEnumerator {
 		if (span[0] == '`') {
 			if (span[1] == '`') { // Handle "``" by treating the second ` as part of the text.
 				this._current.Text = span.Slice(1, currentLength+1);
-				this._current.Token = '\0';
+				this._current.Identifier = '\0';
 			} else {
 				this._current.Text = span.Slice(2, currentLength); // text = everything after the code-token.
-				this._current.Token = span[1]; // the code token itself is always the character after `
+				this._current.Identifier = span[1]; // the code token itself is always the character after `
 			}
 		} else {
 			// If we have no `, we can return the entire span we got. The +2 is because we accounted for "`_"
 			// when determining the currentLength (by starting from pos. 2).
 			this._current.Text = span.Slice(0, currentLength+2);
-			this._current.Token = '\0';
+			this._current.Identifier = '\0';
 		}
 		return true;
 	}

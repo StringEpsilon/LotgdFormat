@@ -24,7 +24,6 @@ public class LotgdFormatCode {
 	/// <summary>
 	/// Specifies which tag
 	/// </summary>
-	/// <value></value>
 	public string? Tag { get; set; }
 
 	/// <summary>

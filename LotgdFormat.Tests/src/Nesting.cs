@@ -10,7 +10,8 @@ public class Nesting {
 			new LotgdFormatCode(){ Token = '@', Color="00FF00"},
 			new LotgdFormatCode(){ Token = 'b', Tag="b"}
 		});
-		string result = formatter.AddText("`@green `bbold green`0 bold`b").GetOutput();
+		formatter.AddText("`@green `bbold green`0 bold`b");
+		string result = formatter.GetOutput();
 
 		Assert.Equal("<span class=\"c64\">green <b>bold green</b></span><b> bold</b>", result);
 	}

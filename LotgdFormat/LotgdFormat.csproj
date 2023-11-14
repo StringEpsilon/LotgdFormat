@@ -4,7 +4,7 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>0.10.0</Version>
+		<Version>0.10.1</Version>
 		<Authors>StringEpsilon</Authors>
 		<Summary>A C# implementation of the LotgD style formatting code for text.</Summary>
 		<PackageTags>lotgd</PackageTags>

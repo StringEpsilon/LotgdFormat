@@ -71,8 +71,8 @@ public class Formatter {
 						this._nodes.RemoveAt(this._nodes.Count-1);
 					} else {
 						this._nodes.Add(Node.CreateTagCloseNode(code.Tag));
-						this._openTags[node.Token] = false;
 					}
+					this._openTags[node.Token] = false;
 				} else {
 					this._nodes.Add(node);
 					this.SetTagOpenStatus(node.Token, true);

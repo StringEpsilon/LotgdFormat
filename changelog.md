@@ -1,3 +1,7 @@
+# 0.10.1:
+- Bugfix: When eliminating empty tags, the tag was not properly flagged as closed, which caused incorrect markup to be
+	rendered. Example input: ` ``b``b ``bbold text``b ` rendered as ` </b>bold text<b>` instead of ` <b>bold text</b>`
+
 # 0.10.0:
 
 **BREAKING:**

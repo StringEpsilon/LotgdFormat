@@ -1,3 +1,13 @@
+# 0.11:
+
+**BREAKING:**
+- Library now targets .NET8.0 only.
+
+**Regular changes:**
+- Fixed exception caused by looking at `.Last()` open node when trying to close a tag without checking if that collection has
+  any items to begin with.
+
+
 # 0.10.1:
 - Bugfix: When eliminating empty tags, the tag was not properly flagged as closed, which caused incorrect markup to be
 	rendered. Example input: ` ``b``b ``bbold text``b ` rendered as ` </b>bold text<b>` instead of ` <b>bold text</b>`

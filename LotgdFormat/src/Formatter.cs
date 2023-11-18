@@ -67,7 +67,7 @@ public class Formatter {
 			case NodeType.Tag: {
 				var code = _codeLookup[node.Token];
 				if (code?.Tag != null && this.IsTagOpen(node.Token)) {
-					if (this._nodes.Last().Token == node.Token) {
+					if (this._nodes.Count > 0 && this._nodes.Last().Token == node.Token) {
 						this._nodes.RemoveAt(this._nodes.Count-1);
 					} else {
 						this._nodes.Add(Node.CreateTagCloseNode(code.Tag));

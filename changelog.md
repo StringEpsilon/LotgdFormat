@@ -1,4 +1,4 @@
-# 0.12:
+# 0.11.1:
 - Close color correctly when calling `CloseOpenTags()` after Nodes have been cleared.
 
 # 0.11:

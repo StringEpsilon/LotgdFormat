@@ -6,10 +6,10 @@ namespace LotgdFormat;
 
 public class Formatter {
 	private readonly HashArray<LotgdFormatCode> _codeLookup;
+	private char? _currentColor;
 	private readonly List<Node> _nodes = new();
 	private readonly Dictionary<char, bool> _openTags = new();
 	private int _lastColor = -1;
-	private bool _colorOpen = false;
 	public bool Color { get; set; } = true;
 
 	#region Private methods
@@ -22,22 +22,21 @@ public class Formatter {
 	}
 
 	private void CloseColor() {
-		if (!this._colorOpen || this._lastColor < 0 || this._nodes.Count == 0) {
+		if (this._currentColor == null || this._lastColor < 0 || this._nodes.Count == 0) {
 			return;
 		}
-
 		var index = this._nodes.Count - 1;
 		if (index == this._lastColor && this._nodes[_lastColor].Type == NodeType.Color) {
 
 			this._nodes.RemoveAt(this._lastColor);
-			this._colorOpen = false;
 			this._lastColor = -1;
+			this._currentColor = null;
 			return;
 		}
 		if (index - this._lastColor < 0) {
 			this._nodes.Add(Node.CreateColorCloseNode());
-			this._colorOpen = false;
 			this._lastColor = -1;
+			this._currentColor = null;
 			return;
 		}
 
@@ -56,8 +55,8 @@ public class Formatter {
 			}
 		}
 		this._nodes.Add(Node.CreateColorCloseNode());
-		this._colorOpen = false;
 		this._lastColor = -1;
+		this._currentColor = null;
 		for (i = 0; i < stack.Length; i++) {
 			this.AddNode(stack[i]);
 		}
@@ -86,12 +85,17 @@ public class Formatter {
 			}
 			case NodeType.Color: {
 				if (this.Color) {
+					if (this._currentColor == node.Token) {
+						break;
+					}
 					if (_lastColor >= 0) {
 						this._nodes.Add(Node.CreateColorCloseNode());
+						this._currentColor = null;
 					}
 					this._nodes.Add(node);
 					this._lastColor = this._nodes.Count - 1;
-					this._colorOpen = true;
+					this._currentColor = node.Token;
+					break;
 				}
 				break;
 			}
@@ -234,10 +238,10 @@ public class Formatter {
 	/// Close the currently open tags.
 	/// </summary>
 	public void CloseOpenTags() {
-		if ((_lastColor != -1 && this._nodes.Count == 0) || this._colorOpen) {
+		if ((_lastColor != -1 && this._nodes.Count == 0) || this._currentColor != null) {
 			this.AddNode(Node.CreateColorCloseNode());
 			this._lastColor = -1;
-			this._colorOpen = false;
+			this._currentColor = null;
 		} else {
 			this.CloseColor();
 		}

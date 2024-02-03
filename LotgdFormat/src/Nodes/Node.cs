@@ -24,7 +24,7 @@ public readonly struct Node {
 	}
 
 	public static Node CreateColorNode(char token) {
-		return new Node(NodeType.Color, $"<span class=\"c{(int)token}\">");
+		return new Node(NodeType.Color, $"<span class=\"c{(int)token}\">", token);
 	}
 
 	public static Node CreateColorCloseNode() {

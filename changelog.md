@@ -1,3 +1,18 @@
+# 0.12
+- Do not re-emit spans when on color tags when the new color is already the current color.
+
+For example:
+```
+`@green `@green still
+used to emit:
+<span class="c64">green </span><span class="c64">green still</span>
+now emits:
+<span class="c64">green green still</span>
+```
+
+This should not break any formatting, but reduce the size of the output and can prevent some edge case bugs when using
+the formatter in ASP.NET Core razor views.
+
 # 0.11.1:
 - Close color correctly when calling `CloseOpenTags()` after Nodes have been cleared.
 

@@ -7,7 +7,7 @@ public class Tag {
 	[Fact]
 	public void Renders_OpenTag() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
+			new LotgdFormatCode('c', tag: "center")
 		});
 
 		string result = formatter.AddText("`cThis is centered");
@@ -18,7 +18,7 @@ public class Tag {
 	[Fact]
 	public void Renders_CloseTag() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
+			new LotgdFormatCode('c', tag: "center")
 		});
 
 		string result = formatter.AddText("`cThis is centered`cThis isn't");
@@ -29,7 +29,7 @@ public class Tag {
 	[Fact]
 	public void Renders_Style() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = 'h', Tag = "span", Style="style=\"font-size: larger\""}
+			new LotgdFormatCode('h', tag: "span", style: "style=\"font-size: larger\"")
 		});
 
 		string result = formatter.AddText("`hBig Text`h");
@@ -40,7 +40,7 @@ public class Tag {
 	[Fact]
 	public void Renders_Class() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = 'h', Tag = "span", Style="class=\"headline\""}
+			new LotgdFormatCode('h', tag: "span", style: "class=\"headline\"")
 		});
 
 		string result = formatter.AddText("`hBig Text`h");;
@@ -51,7 +51,7 @@ public class Tag {
 	[Fact]
 	public void Renders_CloseOpenTags() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
+			new LotgdFormatCode('c', tag: "center")
 		});
 		string result = formatter.AddText("`cThis is centered") + formatter.CloseOpenTags();
 		Assert.Equal("<center>This is centered</center>", result);

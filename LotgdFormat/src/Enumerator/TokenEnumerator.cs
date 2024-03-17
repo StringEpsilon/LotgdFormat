@@ -6,6 +6,7 @@ namespace LotgdFormat;
 internal ref struct TokenEnumerator {
 	private ReadOnlySpan<char> _inputString;
 	private FormatToken _current;
+	private int _offset;
 
 	public TokenEnumerator(ReadOnlySpan<char> input) {
 		this._inputString = input;
@@ -31,21 +32,24 @@ internal ref struct TokenEnumerator {
 			_inputString = span.Slice(currentLength + 2);
 		}
 
-
 		if (span[0] == '`') {
 			if (span[1] == '`') { // Handle "``" by treating the second ` as part of the text.
-				this._current.Text = span.Slice(1, currentLength+1);
+				this._current.Index = this._offset +1;
+				this._current.Length = currentLength+1;
 				this._current.Identifier = '\0';
 			} else {
-				this._current.Text = span.Slice(2, currentLength); // text = everything after the code-token.
+				this._current.Index = this._offset +2;
+				this._current.Length = currentLength;
 				this._current.Identifier = span[1]; // the code token itself is always the character after `
 			}
 		} else {
 			// If we have no `, we can return the entire span we got. The +2 is because we accounted for "`_"
 			// when determining the currentLength (by starting from pos. 2).
-			this._current.Text = span.Slice(0, currentLength+2);
+			this._current.Index = this._offset;
+			this._current.Length = currentLength+2;
 			this._current.Identifier = '\0';
 		}
+		_offset += currentLength+2;
 		return true;
 	}
 

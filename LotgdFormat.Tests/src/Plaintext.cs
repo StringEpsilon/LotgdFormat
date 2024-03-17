@@ -6,7 +6,7 @@ public class Plaintext {
 	[Fact]
 	public void Echoes_Plaintext() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = '@', Color="00FF00"}
+			new LotgdFormatCode('@', color: "00FF00")
 		});
 
 		string result = formatter.AddText("This is plaintext");
@@ -17,7 +17,7 @@ public class Plaintext {
 	[Fact]
 	public void Escapes_Backtick() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = '@', Color="00FF00"}
+			new LotgdFormatCode('@', color: "00FF00")
 		});
 
 		string result = formatter.AddText("``");
@@ -28,7 +28,7 @@ public class Plaintext {
 	[Fact]
 	public void Renders_Unsafe() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = '@', Color="00FF00"}
+			new LotgdFormatCode('@', color: "00FF00")
 		});
 
 		string result = formatter.AddText("<script>alter('XSS');</script>", true);
@@ -38,7 +38,7 @@ public class Plaintext {
 	[Fact]
 	public void Renders_Safe() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = '@', Color="00FF00"}
+			new LotgdFormatCode('@', color: "00FF00")
 		});
 
 		string result = formatter.AddText("<script>alter('XSS');</script>");
@@ -49,7 +49,7 @@ public class Plaintext {
 	[Fact]
 	public void Renders_SafeUnsafeSafe() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = '@', Color="00FF00"}
+			new LotgdFormatCode('@', color: "00FF00")
 		});
 		string result = formatter.AddText("<safe/>");
 		result += formatter.AddText("<unsafe/>", true);

@@ -8,7 +8,7 @@ public class Cleanup {
 	[Fact]
 	public void Clears_Content() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
+			new LotgdFormatCode('c', tag:"center" )
 		});
 		Assert.Equal("<center>This is centered", formatter.AddText("`cThis is centered"));
 		Assert.Equal("", formatter.AddText(""));
@@ -18,7 +18,7 @@ public class Cleanup {
 	[Fact]
 	public void DoubleCloseOpenTags() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = 'c', Tag = "center"}
+			new LotgdFormatCode('c', tag:"center" )
 		});
 		var foo = formatter.AddText("`cThis is centered");
 		Assert.Equal("<center>This is centered", foo);
@@ -33,9 +33,9 @@ public class Cleanup {
 	[Fact]
 	public void ColorCloseMultipleTexts() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = 'c', Tag = "center"},
-			new LotgdFormatCode(){ Token = '$', Color = "FF0000"},
-			new LotgdFormatCode(){ Token = '@', Color = "00FF00"},
+			new LotgdFormatCode('c', tag: "center"),
+			new LotgdFormatCode('$', color: "FF0000"),
+			new LotgdFormatCode('@', color: "00FF00"),
 		});
 		;
 		var foo = formatter.AddText("`$");

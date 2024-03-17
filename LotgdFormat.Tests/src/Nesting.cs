@@ -6,10 +6,10 @@ using Xunit;
 public class Nesting {
 	[Fact]
 	public void Unnests_Properly() {
-		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = '@', Color="00FF00"},
-			new LotgdFormatCode(){ Token = 'b', Tag="b"}
-		});
+		var formatter = new Formatter([
+			new LotgdFormatCode('@', color:"00FF00"),
+			new LotgdFormatCode('b', tag:"b"),
+		]);
 
 		string result = formatter.AddText("`@green `bbold green`0 bold`b");;
 
@@ -18,12 +18,12 @@ public class Nesting {
 
 	[Fact]
 	public void Unstacks_Nested_Tags_Correctly() {
-		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = '@', Color="00FF00"},
-			new LotgdFormatCode(){ Token = '&', Color="FFFFFF"},
-			new LotgdFormatCode(){ Token = 'b', Tag="b"},
-			new LotgdFormatCode(){ Token = 'n', Tag="br", SelfClosing = true}
-		});
+		var formatter = new Formatter([
+			new LotgdFormatCode('@', color: "00FF00"),
+			new LotgdFormatCode('&', color: "FFFFFF"),
+			new LotgdFormatCode('b', tag: "b"),
+			new LotgdFormatCode('n', tag: "br", selfClosing: true),
+		]);
 
 		string result = formatter.AddText("`b`&with text`0`b `bbold`b");
 

@@ -5,9 +5,9 @@ using Xunit;
 public class SelfClosing {
 	[Fact]
 	public void Renders_Linebreak() {
-		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = 'n', Tag = "br", SelfClosing = true}
-		});
+		var formatter = new Formatter([
+			new LotgdFormatCode('n', tag: "br", selfClosing: true)
+		]);
 
 		string result = formatter.AddText("Line one.`nLine two.");;
 
@@ -16,9 +16,9 @@ public class SelfClosing {
 
 	[Fact]
 	public void Renders_HorizontalLine() {
-		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode(){ Token = '-', Tag = "hr", SelfClosing = true}
-		});
+		var formatter = new Formatter([
+			new LotgdFormatCode('-', tag: "hr", selfClosing: true)
+		]);
 
 		string result = formatter.AddText("`-");;
 

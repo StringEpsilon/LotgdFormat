@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
 namespace LotgdFormat;
 
 #nullable enable
@@ -22,6 +23,10 @@ public class Formatter {
 	}
 
 	private void CloseColor() {
+		if (this._currentColor != null && this._lastColor < 0 ) {
+			this._nodes.Add(new Node(NodeType.ColorClose));
+			return;
+		}
 		if (this._currentColor == null || this._lastColor < 0 || this._nodes.Count == 0) {
 			return;
 		}
@@ -33,7 +38,7 @@ public class Formatter {
 			return;
 		}
 		if (index - this._lastColor < 0) {
-			this._nodes.Add(Node.CreateColorCloseNode());
+			this._nodes.Add(new Node(NodeType.ColorClose));
 			this._lastColor = -1;
 			this._currentColor = null;
 			return;
@@ -48,12 +53,12 @@ public class Formatter {
 				if (this.IsTagOpen(node.Token) && code?.Tag != null) {
 					stack[i] = node;
 					i--;
-					this._nodes.Add(Node.CreateTagCloseNode(code.Tag));
+					this._nodes.Add(new Node(NodeType.TagClose, code));
 					this._openTags[node.Token] = false;
 				}
 			}
 		}
-		this._nodes.Add(Node.CreateColorCloseNode());
+		this._nodes.Add(new Node(NodeType.ColorClose));
 		this._lastColor = -1;
 		this._currentColor = null;
 		for (i = 0; i < stack.Length; i++) {
@@ -73,7 +78,7 @@ public class Formatter {
 					if (this._nodes.Count > 0 && this._nodes.Last().Token == node.Token) {
 						this._nodes.RemoveAt(this._nodes.Count-1);
 					} else {
-						this._nodes.Add(Node.CreateTagCloseNode(code.Tag));
+						this._nodes.Add(new Node(NodeType.TagClose, code));
 					}
 					this._openTags[node.Token] = false;
 				} else {
@@ -88,7 +93,7 @@ public class Formatter {
 						break;
 					}
 					if (_lastColor >= 0) {
-						this._nodes.Add(Node.CreateColorCloseNode());
+						this._nodes.Add(new Node(NodeType.ColorClose));
 						this._currentColor = null;
 					}
 					this._nodes.Add(node);
@@ -105,8 +110,8 @@ public class Formatter {
 		}
 	}
 
-	private void AddTextNode(ReadOnlySpan<char> text, bool isUnsafe) {
-		this._nodes.Add(Node.CreateTextNode(text, isUnsafe));
+	private void AddTextNode(int textStart, int length, bool isUnsafe) {
+		this._nodes.Add(new Node(textStart, length, isUnsafe));
 	}
 
 	private bool IsTagOpen(char token) {
@@ -114,44 +119,25 @@ public class Formatter {
 		return result;
 	}
 
-	private string Parse(ReadOnlySpan<char> input, bool isUnsafe, bool isPrivileged) {
-		var enumerator = new TokenEnumerator(input);
-		foreach (var token in enumerator) {
-			switch (token.Identifier) {
-				case '\0':
-					break;
-				case '0':
-					this.CloseColor();
-					break;
-				default:
-					var code = _codeLookup[token.Identifier];
-					if (code != null) {
-						if (!code.Privileged || isPrivileged) {
-							this.AddNode(code.GetNode());
-						}
-					} else {
-						this.AddTextNode(token.Identifier.ToString(), isUnsafe);
-					}
-					break;
-			}
-			if (token.Text.Length != 0) {
-				this.AddTextNode(token.Text, isUnsafe);
-			}
-		}
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	private string CreateOutput(List<Node> nodes, in ReadOnlySpan<char> input) {
+		string[] outputs = new string[this._nodes.Count];
+
 		var totalLength = 0;
-		var nodes = CollectionsMarshal.AsSpan(this._nodes);
-		for (int i = 0; i < nodes.Length; i++) {
-			totalLength += _nodes[i].Output.Length;
+		for (int i = 0; i < nodes.Count; i++) {
+			outputs[i] = _nodes[i].GetOuput(input);
+			totalLength += outputs[i].Length;
 		}
 		Span<char> ouputSpan = stackalloc char[totalLength];
 		int index = 0;
 		int nodeLength;
-		for (int i = 0; i < nodes.Length; i++) {
-			nodeLength = nodes[i].Output.Length;
-			nodes[i].Output.CopyTo(ouputSpan.Slice(index, nodeLength));
+		for (int i = 0; i < nodes.Count; i++) {
+			nodeLength = outputs[i].Length;
+			outputs[i].CopyTo(ouputSpan.Slice(index, nodeLength));
 			index += nodeLength;
 		}
 		this._nodes.Clear();
+		this._lastColor = -1;
 		return ouputSpan.ToString();
 	}
 
@@ -181,24 +167,6 @@ public class Formatter {
 	}
 
 
-
-	/// <summary>
-	/// Add text to the formatter.
-	/// </summary>
-	/// <param name="input">
-	/// The text to parse and add to the output.
-	/// </param>
-	/// <param name="isUnsafe">
-	/// If set to true, the formatter will pass through HTML content without escapting it.
-	/// Use with caution.
-	/// </param>
-	public string AddText(string input, bool isUnsafe = false, bool isPrivileged = false) {
-		if (input == null || input.Length != 0) {
-			return this.Parse(input, isUnsafe, isPrivileged);
-		}
-		return "";
-	}
-
 	/// <summary>
 	/// Add text to the formatter.
 	/// </summary>
@@ -210,10 +178,33 @@ public class Formatter {
 	/// Use with caution.
 	/// </param>
 	public string AddText(ReadOnlySpan<char> input, bool isUnsafe = false, bool isPrivileged = false) {
-		if (input.Length != 0) {
-			return this.Parse(input, isUnsafe, isPrivileged);
+		if (input == null || input.Length == 0) {
+			return "";
 		}
-		return "";
+		var enumerator = new TokenEnumerator(input);
+		foreach (var token in enumerator) {
+			switch (token.Identifier) {
+				case '\0':
+					break;
+				case '0':
+					this.CloseColor();
+					break;
+				default:
+					var code = _codeLookup[token.Identifier];
+					if (code != null) {
+						if (!code.Privileged || isPrivileged) {
+							this.AddNode(new Node(code._nodeType, code));
+						}
+					} else {
+						this.AddTextNode(token.Index-1, 1, isUnsafe);
+					}
+					break;
+			}
+			if (token.Length != 0) {
+				this.AddTextNode(token.Index, token.Length, isUnsafe);
+			}
+		}
+		return this.CreateOutput(this._nodes, input);
 	}
 
 	/// <summary>
@@ -221,7 +212,7 @@ public class Formatter {
 	/// </summary>
 	public string CloseOpenTags() {
 		if ((_lastColor != -1 && this._nodes.Count == 0) || this._currentColor != null) {
-			this.AddNode(Node.CreateColorCloseNode());
+			this.AddNode(new Node(NodeType.ColorClose));
 			this._lastColor = -1;
 			this._currentColor = null;
 		} else {
@@ -232,25 +223,11 @@ public class Formatter {
 			if (this._openTags[token]) {
 				var code = this._codeLookup[token];
 				if (code?.Tag != null) {
-					this.AddNode(Node.CreateTagCloseNode(code.Tag));
+					this.AddNode(new Node(NodeType.TagClose, code));
 				}
 				this._openTags[token] = false;
 			}
 		}
-		var totalLength = 0;
-		var nodes = CollectionsMarshal.AsSpan(this._nodes);
-		for (int i = 0; i < nodes.Length; i++) {
-			totalLength += _nodes[i].Output.Length;
-		}
-		Span<char> ouputSpan = stackalloc char[totalLength];
-		int index = 0;
-		int nodeLength;
-		for (int i = 0; i < nodes.Length; i++) {
-			nodeLength = nodes[i].Output.Length;
-			nodes[i].Output.CopyTo(ouputSpan.Slice(index, nodeLength));
-			index += nodeLength;
-		}
-		this._nodes.Clear();
-		return ouputSpan.ToString();
+		return this.CreateOutput(this._nodes, "");
 	}
 }

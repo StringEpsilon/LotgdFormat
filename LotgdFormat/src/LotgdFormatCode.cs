@@ -1,8 +1,37 @@
 ﻿namespace LotgdFormat;
 
 public class LotgdFormatCode {
-	private static readonly Node _invalidNode = new(NodeType.Invalid);
-	public LotgdFormatCode() {
+	public LotgdFormatCode(
+		char token,
+		bool selfClosing = false,
+		bool privileged = false,
+		string? color = null,
+		string? style = null,
+		string? tag = null
+	) {
+		this.Token = token;
+		this.Color = color;
+		this.Style = style;
+		this.Tag = tag;
+		this.SelfClosing = selfClosing;
+		this.Privileged = privileged;
+
+		if (this.Color != null) {
+			this._nodeType = NodeType.Color;
+			this._nodeOutput = $"<span class=\"c{(int)this.Token}\">";
+		} else if (this.Tag == null) {
+			this._nodeType = NodeType.Invalid;
+			this._nodeOutput = "";
+		} else if (this.SelfClosing) {
+			this._nodeType = NodeType.SelfClosing;
+			this._nodeOutput = $"<{this.Tag}/>";
+		} else {
+			this._nodeType = NodeType.Tag;
+			this._nodeOutputClose = $"</{this.Tag}>";
+			this._nodeOutput = this.Style == null
+				? $"<{this.Tag}>"
+				: $"<{this.Tag} {this.Style}>";
+		}
 	}
 
 	/// <summary>
@@ -36,23 +65,8 @@ public class LotgdFormatCode {
 	/// </summary>
 	public bool Privileged { get; set; } = false;
 
-	private Node? _node = null;
-
-	internal Node GetNode() {
-		if (this._node != null) {
-			return this._node.Value;
-		}
-		if (this.Color != null) {
-			this._node = Node.CreateColorNode(this.Token);
-		} else if (this.Tag == null) {
-			this._node = _invalidNode;
-		} else {
-			this._node = this.SelfClosing
-				? Node.CreateSelfClosingNode(this.Tag)
-				: Node.CreateTagNode(this.Token, this.Tag, this.Style);
-		}
-
-		return _node.Value;
-	}
+	internal string _nodeOutput = "";
+	internal string _nodeOutputClose = "";
+	internal NodeType _nodeType = NodeType.Invalid;
 }
 

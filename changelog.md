@@ -1,3 +1,14 @@
+# future
+
+**BREAKING:**
+- Removed `Formatter.GetOutput()`, instead `AddText(...)` and `CloseOpenTags()` return output directly.
+- Added return type `string` to `Formatter.AddText(...)` and `Formatter.CloseOpenTags()`.
+- Removed `Formatter.ClearText()`
+- `Formatter.Clear()`  only clears open tags now (w/o generating output, of course)
+- `Formatter.IsClear()`  only indicates open tags now.
+- The `Formatter` instance no longer keeps nodes in between calls of `AddText()` and `CloseOpenTags()`.
+
+
 # 0.12
 - Do not re-emit spans when on color tags when the new color is already the current color.
 

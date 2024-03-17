@@ -27,7 +27,6 @@ public class Formatter {
 		}
 		var index = this._nodes.Count - 1;
 		if (index == this._lastColor && this._nodes[_lastColor].Type == NodeType.Color) {
-
 			this._nodes.RemoveAt(this._lastColor);
 			this._lastColor = -1;
 			this._currentColor = null;
@@ -63,7 +62,7 @@ public class Formatter {
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void AddNode(Node node) {
+	private void AddNode(in Node node) {
 		switch (node.Type) {
 			case NodeType.Invalid: {
 				return;
@@ -115,9 +114,8 @@ public class Formatter {
 		return result;
 	}
 
-	private void Parse(ReadOnlySpan<char> input, bool isUnsafe, bool isPrivileged) {
+	private string Parse(ReadOnlySpan<char> input, bool isUnsafe, bool isPrivileged) {
 		var enumerator = new TokenEnumerator(input);
-
 		foreach (var token in enumerator) {
 			switch (token.Identifier) {
 				case '\0':
@@ -140,6 +138,21 @@ public class Formatter {
 				this.AddTextNode(token.Text, isUnsafe);
 			}
 		}
+		var totalLength = 0;
+		var nodes = CollectionsMarshal.AsSpan(this._nodes);
+		for (int i = 0; i < nodes.Length; i++) {
+			totalLength += _nodes[i].Output.Length;
+		}
+		Span<char> ouputSpan = stackalloc char[totalLength];
+		int index = 0;
+		int nodeLength;
+		for (int i = 0; i < nodes.Length; i++) {
+			nodeLength = nodes[i].Output.Length;
+			nodes[i].Output.CopyTo(ouputSpan.Slice(index, nodeLength));
+			index += nodeLength;
+		}
+		this._nodes.Clear();
+		return ouputSpan.ToString();
 	}
 
 	#endregion
@@ -154,34 +167,20 @@ public class Formatter {
 	}
 
 	/// <summary>
-	/// Wether or not the formatter is clear of text and open tags.
+	/// Wether or not the formatter has open tags.
 	/// </summary>
 	public bool IsClear() {
-		return this._nodes.Count == 0
-			&& this._openTags.Values.All(y => y);
+		return !this._openTags.Values.Any(y => y);
 	}
 
 	/// <summary>
-	/// Wether or not the formatter has pending markup or text to render.
-	/// </summary>
-	public bool HasContent() {
-		return this._nodes.Any();
-	}
-
-	/// <summary>
-	/// Clear all output and open tags.
+	/// Reset open tags.
 	/// </summary>
 	public void Clear() {
-		this.ClearText();
 		this._openTags.Clear();
 	}
 
-	/// <summary>
-	/// Clear current output, but keep memory of currently open tags.
-	/// </summary>
-	public void ClearText() {
-		this._nodes.Clear();
-	}
+
 
 	/// <summary>
 	/// Add text to the formatter.
@@ -193,10 +192,11 @@ public class Formatter {
 	/// If set to true, the formatter will pass through HTML content without escapting it.
 	/// Use with caution.
 	/// </param>
-	public void AddText(string input, bool isUnsafe = false, bool isPrivileged = false) {
+	public string AddText(string input, bool isUnsafe = false, bool isPrivileged = false) {
 		if (input == null || input.Length != 0) {
-			this.Parse(input, isUnsafe, isPrivileged);
+			return this.Parse(input, isUnsafe, isPrivileged);
 		}
+		return "";
 	}
 
 	/// <summary>
@@ -209,35 +209,17 @@ public class Formatter {
 	/// If set to true, the formatter will pass through HTML content without escapting it.
 	/// Use with caution.
 	/// </param>
-	public void AddText(ReadOnlySpan<char> input, bool isUnsafe = false, bool isPrivileged = false) {
+	public string AddText(ReadOnlySpan<char> input, bool isUnsafe = false, bool isPrivileged = false) {
 		if (input.Length != 0) {
-			this.Parse(input, isUnsafe, isPrivileged);
+			return this.Parse(input, isUnsafe, isPrivileged);
 		}
-	}
-
-	/// <summary>
-	/// Get the output of the formatter.
-	/// </summary>
-	public string GetOutput() {
-		var totalLength = 0;
-		for (int i = 0; i < this._nodes.Count; i++) {
-			totalLength += _nodes[i].Output.Length;
-		}
-		Span<char> ouputSpan = stackalloc char[totalLength];
-		int index = 0;
-		int nodeLength;
-		for (int i = 0; i < this._nodes.Count; i++) {
-			nodeLength = this._nodes[i].Output.Length;
-			this._nodes[i].Output.AsSpan().CopyTo(ouputSpan.Slice(index, nodeLength));
-			index += nodeLength;
-		}
-		return ouputSpan.ToString();
+		return "";
 	}
 
 	/// <summary>
 	/// Close the currently open tags.
 	/// </summary>
-	public void CloseOpenTags() {
+	public string CloseOpenTags() {
 		if ((_lastColor != -1 && this._nodes.Count == 0) || this._currentColor != null) {
 			this.AddNode(Node.CreateColorCloseNode());
 			this._lastColor = -1;
@@ -255,5 +237,20 @@ public class Formatter {
 				this._openTags[token] = false;
 			}
 		}
+		var totalLength = 0;
+		var nodes = CollectionsMarshal.AsSpan(this._nodes);
+		for (int i = 0; i < nodes.Length; i++) {
+			totalLength += _nodes[i].Output.Length;
+		}
+		Span<char> ouputSpan = stackalloc char[totalLength];
+		int index = 0;
+		int nodeLength;
+		for (int i = 0; i < nodes.Length; i++) {
+			nodeLength = nodes[i].Output.Length;
+			nodes[i].Output.CopyTo(ouputSpan.Slice(index, nodeLength));
+			index += nodeLength;
+		}
+		this._nodes.Clear();
+		return ouputSpan.ToString();
 	}
 }

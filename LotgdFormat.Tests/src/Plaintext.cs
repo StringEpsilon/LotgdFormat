@@ -8,8 +8,8 @@ public class Plaintext {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '@', Color="00FF00"}
 		});
-		formatter.AddText("This is plaintext");
-		string result = formatter.GetOutput();
+
+		string result = formatter.AddText("This is plaintext");
 
 		Assert.Equal("This is plaintext", result);
 	}
@@ -19,8 +19,8 @@ public class Plaintext {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '@', Color="00FF00"}
 		});
-		formatter.AddText("``");
-		string result = formatter.GetOutput();
+
+		string result = formatter.AddText("``");
 
 		Assert.Equal("`", result);
 	}
@@ -30,9 +30,8 @@ public class Plaintext {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '@', Color="00FF00"}
 		});
-		formatter.AddText("<script>alter('XSS');</script>", true);
-		string result = formatter.GetOutput();
 
+		string result = formatter.AddText("<script>alter('XSS');</script>", true);
 		Assert.Equal("<script>alter('XSS');</script>", result);
 	}
 
@@ -41,8 +40,8 @@ public class Plaintext {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '@', Color="00FF00"}
 		});
-		formatter.AddText("<script>alter('XSS');</script>");
-		string result = formatter.GetOutput();
+
+		string result = formatter.AddText("<script>alter('XSS');</script>");
 
 		Assert.Equal("&lt;script&gt;alter(&#39;XSS&#39;);&lt;/script&gt;", result);
 	}
@@ -52,10 +51,9 @@ public class Plaintext {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '@', Color="00FF00"}
 		});
-		formatter.AddText("<safe/>");
-		formatter.AddText("<unsafe/>", true);
-		formatter.AddText("<safe/>", false);
-		string result = formatter.GetOutput();
+		string result = formatter.AddText("<safe/>");
+		result += formatter.AddText("<unsafe/>", true);
+		result += formatter.AddText("<safe/>", false);
 
 		Assert.Equal("&lt;safe/&gt;<unsafe/>&lt;safe/&gt;", result);
 	}

@@ -8,8 +8,8 @@ public class SelfClosing {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = 'n', Tag = "br", SelfClosing = true}
 		});
-		formatter.AddText("Line one.`nLine two.");
-		string result = formatter.GetOutput();
+
+		string result = formatter.AddText("Line one.`nLine two.");;
 
 		Assert.Equal("Line one.<br/>Line two.", result);
 	}
@@ -19,8 +19,8 @@ public class SelfClosing {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode(){ Token = '-', Tag = "hr", SelfClosing = true}
 		});
-		formatter.AddText("`-");
-		string result = formatter.GetOutput();
+
+		string result = formatter.AddText("`-");;
 
 		Assert.Equal("<hr/>", result);
 	}

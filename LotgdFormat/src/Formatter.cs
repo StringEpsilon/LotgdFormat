@@ -110,10 +110,6 @@ public class Formatter {
 		}
 	}
 
-	private void AddTextNode(int textStart, int length, bool isUnsafe) {
-		this._nodes.Add(new Node(textStart, length, isUnsafe));
-	}
-
 	private bool IsTagOpen(char token) {
 		this._openTags.TryGetValue(token, out bool result);
 		return result;
@@ -166,7 +162,6 @@ public class Formatter {
 		this._openTags.Clear();
 	}
 
-
 	/// <summary>
 	/// Add text to the formatter.
 	/// </summary>
@@ -196,12 +191,12 @@ public class Formatter {
 							this.AddNode(new Node(code._nodeType, code));
 						}
 					} else {
-						this.AddTextNode(token.Index-1, 1, isUnsafe);
+						this._nodes.Add(new Node(token.Index-1, 1, isUnsafe));
 					}
 					break;
 			}
 			if (token.Length != 0) {
-				this.AddTextNode(token.Index, token.Length, isUnsafe);
+				this._nodes.Add(new Node(token.Index, token.Length, isUnsafe));
 			}
 		}
 		return this.CreateOutput(this._nodes, input);

@@ -38,35 +38,35 @@ public class LotgdFormatCode {
 	/// The single character token to that marks this formatting token.
 	/// Must be unique.
 	/// </summary>
-	public char Token { get; set; }
+	public char Token { get; }
 
 	/// <summary>
 	/// The six digit hexcode of the desired text color.
 	/// </summary>
-	public string? Color { get; set; }
+	public string? Color { get; }
 
 	/// <summary>
 	/// Additional CSS rules applied to the rendered HTML element per inline style attribute.
 	/// </summary>
-	public string? Style { get; set; }
+	public string? Style { get; }
 
 	/// <summary>
 	/// Specifies which tag
 	/// </summary>
-	public string? Tag { get; set; }
+	public string? Tag { get; }
 
 	/// <summary>
 	/// Whether or not the associated tag is self-closing.
 	/// </summary>
-	public bool SelfClosing { get; set; } = false;
+	public bool SelfClosing { get; }
 
 	/// <summary>
 	/// Code may only apply to text added with the isPriviliged flag set. Otherwise the token is ignored.
 	/// </summary>
-	public bool Privileged { get; set; } = false;
+	public bool Privileged { get; }
 
-	internal string _nodeOutput = "";
-	internal string _nodeOutputClose = "";
-	internal NodeType _nodeType = NodeType.Invalid;
+	internal readonly string _nodeOutput = "";
+	internal readonly string _nodeOutputClose = "";
+	internal readonly NodeType _nodeType = NodeType.Invalid;
 }
 

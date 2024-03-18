@@ -5,6 +5,16 @@ using Xunit;
 
 public class Tag {
 	[Fact]
+	public void Renders_OpenTag_Middel() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode('c', tag: "center")
+		});
+
+		string result = formatter.AddText("This is `ccentered");
+
+		Assert.Equal("This is <center>centered", result);
+	}
+	[Fact]
 	public void Renders_OpenTag() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode('c', tag: "center")
@@ -55,5 +65,15 @@ public class Tag {
 		});
 		string result = formatter.AddText("`cThis is centered") + formatter.CloseOpenTags();
 		Assert.Equal("<center>This is centered</center>", result);
+	}
+
+	[Fact]
+	public void RendersCorrectWithoutPreamble() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode('H', tag: "span", style: "class='navhi'")
+		});
+
+		string result = formatter.AddText("Ü`Hb`Her LoGD");
+		Assert.Equal("&#220;<span class='navhi'>b</span>er LoGD", result);
 	}
 }

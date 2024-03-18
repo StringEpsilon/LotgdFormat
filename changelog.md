@@ -1,4 +1,7 @@
-# future
+# 0.13.1
+- Bugfix: Code at the very beginning ot the input could misbehave in some scenarios.
+
+# 0.13
 
 **BREAKING:**
 - Removed `Formatter.GetOutput()`, instead `AddText(...)` and `CloseOpenTags()` return output directly.

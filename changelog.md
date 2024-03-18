@@ -7,6 +7,10 @@
 - `Formatter.Clear()`  only clears open tags now (w/o generating output, of course)
 - `Formatter.IsClear()`  only indicates open tags now.
 - The `Formatter` instance no longer keeps nodes in between calls of `AddText()` and `CloseOpenTags()`.
+- Formatter omits `\n` in the output (but not `<br/>`) in some cases.
+- Made `Node`  internal
+- Added constructor to `LotgdFormatCode`.
+- Made `LotgdFormatCode` properties read-only.
 
 
 # 0.12

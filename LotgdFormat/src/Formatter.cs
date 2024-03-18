@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Buffers;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace LotgdFormat;
@@ -6,6 +7,7 @@ namespace LotgdFormat;
 #nullable enable
 
 public class Formatter {
+	private static ArrayPool<Node> _nodePool = ArrayPool<Node>.Create();
 	private readonly HashArray<LotgdFormatCode> _codeLookup;
 	private char? _currentColor;
 	private readonly List<Node> _nodes = new();
@@ -23,11 +25,11 @@ public class Formatter {
 	}
 
 	private void CloseColor() {
-		if (this._currentColor != null && this._lastColor < 0 ) {
-			this._nodes.Add(new Node(NodeType.ColorClose));
+		if (this._currentColor == null) {
 			return;
 		}
-		if (this._currentColor == null || this._lastColor < 0 || this._nodes.Count == 0) {
+		if (this._lastColor < 0) {
+			this._nodes.Add(new Node(NodeType.ColorClose));
 			return;
 		}
 		var index = this._nodes.Count - 1;
@@ -37,20 +39,14 @@ public class Formatter {
 			this._currentColor = null;
 			return;
 		}
-		if (index - this._lastColor < 0) {
-			this._nodes.Add(new Node(NodeType.ColorClose));
-			this._lastColor = -1;
-			this._currentColor = null;
-			return;
-		}
 
 		Span<Node> stack = new Node[index - this._lastColor];
 		var i = stack.Length - 1;
 		for (; index > this._lastColor; index--) {
 			var node = this._nodes[index];
-			if (node.Type == NodeType.Tag) {
-				var code = _codeLookup[node.Token];
-				if (this.IsTagOpen(node.Token) && code?.Tag != null) {
+			if (node.Type == NodeType.Tag && this.IsTagOpen(node.Token)) {
+				var code = this._codeLookup[node.Token];
+				if (code != null) {
 					stack[i] = node;
 					i--;
 					this._nodes.Add(new Node(NodeType.TagClose, code));
@@ -66,6 +62,7 @@ public class Formatter {
 		}
 	}
 
+
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private void AddNode(in Node node) {
 		switch (node.Type) {
@@ -73,10 +70,10 @@ public class Formatter {
 				return;
 			}
 			case NodeType.Tag: {
-				var code = _codeLookup[node.Token];
+				var code = this._codeLookup[node.Token];
 				if (code?.Tag != null && this.IsTagOpen(node.Token)) {
 					if (this._nodes.Count > 0 && this._nodes.Last().Token == node.Token) {
-						this._nodes.RemoveAt(this._nodes.Count-1);
+						this._nodes.RemoveAt(this._nodes.Count - 1);
 					} else {
 						this._nodes.Add(new Node(NodeType.TagClose, code));
 					}
@@ -188,10 +185,10 @@ public class Formatter {
 					var code = _codeLookup[token.Identifier];
 					if (code != null) {
 						if (!code.Privileged || isPrivileged) {
-							this.AddNode(new Node(code._nodeType, code));
+							this.AddNode(new Node(code));
 						}
 					} else {
-						this._nodes.Add(new Node(token.Index-1, 1, isUnsafe));
+						this._nodes.Add(new Node(token.Index - 1, 1, isUnsafe));
 					}
 					break;
 			}
@@ -206,12 +203,14 @@ public class Formatter {
 	/// Close the currently open tags.
 	/// </summary>
 	public string CloseOpenTags() {
-		if ((_lastColor != -1 && this._nodes.Count == 0) || this._currentColor != null) {
-			this.AddNode(new Node(NodeType.ColorClose));
-			this._lastColor = -1;
-			this._currentColor = null;
-		} else {
-			this.CloseColor();
+		if (this.Color) {
+			if ((_lastColor != -1 && this._nodes.Count == 0) || this._currentColor != null) {
+				this.AddNode(new Node(NodeType.ColorClose));
+				this._lastColor = -1;
+				this._currentColor = null;
+			} else {
+				this.CloseColor();
+			}
 		}
 
 		foreach (var token in this._openTags.Keys) {

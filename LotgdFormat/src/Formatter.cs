@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Web;
 
 namespace LotgdFormat;
 
@@ -63,8 +64,7 @@ public class Formatter {
 	}
 
 
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void AddNode(in Node node) {
+	private void AddNode(Node node) {
 		switch (node.Type) {
 			case NodeType.Invalid: {
 				return;
@@ -112,13 +112,20 @@ public class Formatter {
 		return result;
 	}
 
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private string CreateOutput(List<Node> nodes, in ReadOnlySpan<char> input) {
+	private string CreateOutput(List<Node> nodes, ReadOnlySpan<char> input) {
 		string[] outputs = new string[this._nodes.Count];
 
 		var totalLength = 0;
 		for (int i = 0; i < nodes.Count; i++) {
-			outputs[i] = _nodes[i].GetOuput(input);
+			var node = _nodes[i];
+			LotgdFormatCode? code = node.Token == '\0'
+				? null
+				: _codeLookup[node.Token];
+			if (code != null) {
+				outputs[i] = node.GetOuput(code);
+			} else {
+				outputs[i] = node.GetOuput(input);
+			}
 			totalLength += outputs[i].Length;
 		}
 		Span<char> ouputSpan = stackalloc char[totalLength];
@@ -169,10 +176,11 @@ public class Formatter {
 	/// If set to true, the formatter will pass through HTML content without escapting it.
 	/// Use with caution.
 	/// </param>
-	public string AddText(ReadOnlySpan<char> input, bool isUnsafe = false, bool isPrivileged = false) {
+	public string AddText(in string input, bool isUnsafe = false, bool isPrivileged = false) {
 		if (input == null || input.Length == 0) {
 			return "";
 		}
+
 		var enumerator = new TokenEnumerator(input);
 		foreach (var token in enumerator) {
 			switch (token.Identifier) {
@@ -184,7 +192,7 @@ public class Formatter {
 				default:
 					var code = _codeLookup[token.Identifier];
 					if (code != null) {
-						if (!code.Privileged || isPrivileged) {
+						if (!code.Privileged || isPrivileged ) {
 							this.AddNode(new Node(code));
 						}
 					} else {
@@ -193,9 +201,15 @@ public class Formatter {
 					break;
 			}
 			if (token.Length != 0) {
+				if (token.Length == input.Length) {
+					return !isUnsafe
+						? HttpUtility.HtmlEncode(input)
+						: input;
+				}
 				this._nodes.Add(new Node(token.Index, token.Length, isUnsafe));
 			}
 		}
+
 		return this.CreateOutput(this._nodes, input);
 	}
 

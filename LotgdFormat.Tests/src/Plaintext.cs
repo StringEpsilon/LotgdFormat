@@ -3,58 +3,36 @@ using LotgdFormat;
 using Xunit;
 
 public class Plaintext {
-	[Fact]
-	public void Echoes_Plaintext() {
-		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode('@', color: "00FF00")
-		});
+	private Formatter _formatter = new Formatter([]);
 
-		string result = formatter.AddText("This is plaintext");
-
-		Assert.Equal("This is plaintext", result);
+	[Theory]
+	[InlineData("Hello World", "Hello World")]
+	[InlineData("`0Hello World", "Hello World")]
+	[InlineData("Hello`0 World", "Hello World")]
+	[InlineData("Hello World`0", "Hello World")]
+	[InlineData("Hello World`", "Hello World`")]
+	public void Renders_Plaintext(string input, string expectedResult) {
+		var result = _formatter.AddText(input, false, false);
+		Assert.Equal(expectedResult, result);
 	}
 
-	[Fact]
-	public void Escapes_Backtick() {
-		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode('@', color: "00FF00")
-		});
-
-		string result = formatter.AddText("``");
-
-		Assert.Equal("`", result);
+	[Theory]
+	[InlineData("``", "`")]
+	[InlineData("``Hello World``", "`Hello World`")]
+	[InlineData("Hello ``World``", "Hello `World`")]
+	[InlineData("Hello ``World``!", "Hello `World`!")]
+	[InlineData("`u`w`u", "uwu")] // drop the ` on unknown tokens.
+	public void Handles_Escape(string input, string expectedResult) {
+		var result = _formatter.AddText(input, false, false);
+		Assert.Equal(expectedResult, result);
 	}
 
-	[Fact]
-	public void Renders_Unsafe() {
-		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode('@', color: "00FF00")
-		});
-
-		string result = formatter.AddText("<script>alter('XSS');</script>", true);
-		Assert.Equal("<script>alter('XSS');</script>", result);
-	}
-
-	[Fact]
-	public void Renders_Safe() {
-		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode('@', color: "00FF00")
-		});
-
-		string result = formatter.AddText("<script>alter('XSS');</script>");
-
-		Assert.Equal("&lt;script&gt;alter(&#39;XSS&#39;);&lt;/script&gt;", result);
-	}
-
-	[Fact]
-	public void Renders_SafeUnsafeSafe() {
-		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode('@', color: "00FF00")
-		});
-		string result = formatter.AddText("<safe/>");
-		result += formatter.AddText("<unsafe/>", true);
-		result += formatter.AddText("<safe/>", false);
-
-		Assert.Equal("&lt;safe/&gt;<unsafe/>&lt;safe/&gt;", result);
+	[Theory]
+	[InlineData("<script>alert('XSS');</script>", true, "<script>alert('XSS');</script>")]
+	[InlineData("`0&`0`0\"`0", false, "&amp;&quot;")]
+	[InlineData("<script>alert('XSS');</script>", false, "&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;")]
+	public void Renders_SafeAndUnsafe(string input, bool isUnsafe, string expected) {
+		string result = _formatter.AddText(input, isUnsafe);
+		Assert.Equal(expected, result);
 	}
 }

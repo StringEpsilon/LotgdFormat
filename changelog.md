@@ -1,3 +1,8 @@
+# 0.13.2
+- Bugfix: Inputs ending on ` will no longer crash.
+- Performance: If input contains no tokens, shortcut the output.
+- Performance: Shortcut length 1 strings of "&" in html encode (into `&amp`).
+
 # 0.13.1
 - Bugfix: Code at the very beginning ot the input could misbehave in some scenarios.
 

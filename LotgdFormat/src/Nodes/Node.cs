@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Web;
 
 namespace LotgdFormat;
@@ -8,7 +9,6 @@ internal readonly struct Node {
 	internal readonly bool IsUnsafe = false;
 	internal readonly int Size = 0;
 	internal readonly char Token;
-	private readonly LotgdFormatCode? _code = null;
 
 	public Node(NodeType type) {
 		this.Type = type;
@@ -39,33 +39,24 @@ internal readonly struct Node {
 	public Node(NodeType type, LotgdFormatCode code) {
 		this.Type = type;
 		this.Token = code.Token;
-		this._code = code;
 		this.Size = 0;
 	}
 
 	public Node(LotgdFormatCode code) {
 		this.Type = code._nodeType;
 		this.Token = code.Token;
-		this._code = code;
 		this.Size = 0;
 	}
+}
 
-	public string GetOuput(ReadOnlySpan<char> input) {
-		if (this._code != null) {
-			return this.Type switch {
-				NodeType.Color => this._code._nodeOutput,
-				NodeType.Tag => this._code._nodeOutput,
-				NodeType.SelfClosing => this._code._nodeOutput,
-				NodeType.ColorClose => "</span>",
-				NodeType.TagClose => this._code._nodeOutputClose,
-				_ => ""
-			};
-		} else if (this.Type == NodeType.Text) {
-			ReadOnlySpan<char> text = input.Slice(this.TextStart, this.Size);
-			if (this.IsUnsafe) {
+internal static class NodeExtension {
+	internal static string GetOuput(this ref Node node, ReadOnlySpan<char> input) {
+		if (node.Type == NodeType.Text) {
+			ReadOnlySpan<char> text = input.Slice(node.TextStart, node.Size);
+			if (node.IsUnsafe) {
 				return text.ToString();
 			}
-			if (this.Size == 1) {
+			if (node.Size == 1) {
 				switch (text[0]) {
 					case ' ': {
 						return " ";
@@ -76,6 +67,9 @@ internal readonly struct Node {
 					case '"': {
 						return "&quot;";
 					}
+					case '&': {
+						return "&amp;";
+					}
 					case > '0' and < '9':
 					case > 'a' and < 'z':
 					case > 'A' and < 'Z': {
@@ -84,9 +78,18 @@ internal readonly struct Node {
 				}
 			}
 			return HttpUtility.HtmlEncode(text.ToString());
-		} else if (this.Type == NodeType.ColorClose) {
-			return "</span>";
 		}
-		return "";
+		// Only non-text node without a LotgdFormatCode required is NodeType.ColorClose:
+		return "</span>";
+	}
+
+	internal static string GetOuput(this ref Node node, LotgdFormatCode code) {
+		return node.Type switch {
+			NodeType.Color => code._nodeOutput,
+			NodeType.Tag => code._nodeOutput,
+			NodeType.SelfClosing => code._nodeOutput,
+			NodeType.TagClose => code._nodeOutputClose,
+			_ => ""
+		};
 	}
 }

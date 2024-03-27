@@ -3,25 +3,18 @@ using LotgdFormat;
 using Xunit;
 
 public class SelfClosing {
-	[Fact]
-	public void Renders_Linebreak() {
-		var formatter = new Formatter([
-			new LotgdFormatCode('n', tag: "br", selfClosing: true)
-		]);
+	private Formatter _formatter = new Formatter([
+		new LotgdFormatCode('n', tag: "br", selfClosing: true),
+		new LotgdFormatCode('-', tag: "hr", selfClosing: true)
+	]);
 
-		string result = formatter.AddText("Line one.`nLine two.");;
-
-		Assert.Equal("Line one.<br/>Line two.", result);
-	}
-
-	[Fact]
-	public void Renders_HorizontalLine() {
-		var formatter = new Formatter([
-			new LotgdFormatCode('-', tag: "hr", selfClosing: true)
-		]);
-
-		string result = formatter.AddText("`-");;
-
-		Assert.Equal("<hr/>", result);
+	[Theory]
+	[InlineData("Line one.`nLine two.", "Line one.<br/>Line two.")]
+	[InlineData("`nLine two.", "<br/>Line two.")]
+	[InlineData("Line one.`n`n", "Line one.<br/><br/>")]
+	[InlineData("`-`n`-", "<hr/><br/><hr/>")]
+	public void Renders_SafeAndUnsafe(string input, string expected) {
+		string result = _formatter.AddText(input);
+		Assert.Equal(expected, result);
 	}
 }

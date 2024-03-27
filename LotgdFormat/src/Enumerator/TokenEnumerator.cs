@@ -23,7 +23,7 @@ internal ref struct TokenEnumerator {
 		var span = this._inputString.Slice(_offset);
 
 		var currentLength = span.IndexOf('`'); // next index of ` is the length of the text we got.
-		if (currentLength == -1) {
+		if (currentLength == -1 || span.Length == 1) {
 			// handling of input end:
 			this._current.Index = this._offset;
 			this._current.Length = span.Length;

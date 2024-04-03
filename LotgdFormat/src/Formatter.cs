@@ -115,7 +115,6 @@ public class Formatter {
 	private string CreateOutput(List<Node> nodes, ReadOnlySpan<char> input) {
 		string[] outputs = new string[this._nodes.Count];
 
-		var totalLength = 0;
 		for (int i = 0; i < nodes.Count; i++) {
 			var node = _nodes[i];
 			LotgdFormatCode? code = node.Token == '\0'
@@ -126,19 +125,10 @@ public class Formatter {
 			} else {
 				outputs[i] = node.GetOuput(input);
 			}
-			totalLength += outputs[i].Length;
-		}
-		Span<char> ouputSpan = stackalloc char[totalLength];
-		int index = 0;
-		int nodeLength;
-		for (int i = 0; i < nodes.Count; i++) {
-			nodeLength = outputs[i].Length;
-			outputs[i].CopyTo(ouputSpan.Slice(index, nodeLength));
-			index += nodeLength;
 		}
 		this._nodes.Clear();
 		this._lastColor = -1;
-		return ouputSpan.ToString();
+		return string.Concat(outputs);
 	}
 
 	#endregion
@@ -202,6 +192,7 @@ public class Formatter {
 			}
 			if (token.Length != 0) {
 				if (token.Length == input.Length) {
+					// we got the entire span back as text => no formatting token present
 					return !isUnsafe
 						? HttpUtility.HtmlEncode(input)
 						: input;

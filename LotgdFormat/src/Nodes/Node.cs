@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Web;
 
 namespace LotgdFormat;
@@ -12,9 +11,6 @@ internal readonly struct Node {
 
 	public Node(NodeType type) {
 		this.Type = type;
-		if (type == NodeType.ColorClose) {
-			this.Size = 7;
-		}
 	}
 
 	/// <summary>
@@ -51,36 +47,41 @@ internal readonly struct Node {
 
 internal static class NodeExtension {
 	internal static string GetOuput(this ref Node node, ReadOnlySpan<char> input) {
-		if (node.Type == NodeType.Text) {
-			ReadOnlySpan<char> text = input.Slice(node.TextStart, node.Size);
-			if (node.IsUnsafe) {
-				return text.ToString();
-			}
-			if (node.Size == 1) {
-				switch (text[0]) {
-					case ' ': {
-						return " ";
+		if (node.Type != NodeType.Text) {
+			// Only non-text node without a LotgdFormatCode required is NodeType.ColorClose:
+			return "</span>";
+		}
+		ReadOnlySpan<char> text = input.Slice(node.TextStart, node.Size);
+		if (node.IsUnsafe) {
+			return text.ToString();
+		}
+		if (node.Size == 1) {
+			char character = text[0];
+			switch (character) {
+				case ' ': {
+					return " ";
+				}
+				case '\n': {
+					return "";
+				}
+				case '"': {
+					return "&quot;";
+				}
+				case '&': {
+					return "&amp;";
+				}
+				default: {
+					if (character.IsSafe()) {
+						return character.ToString();
 					}
-					case '\n': {
-						return "";
-					}
-					case '"': {
-						return "&quot;";
-					}
-					case '&': {
-						return "&amp;";
-					}
-					case > '0' and < '9':
-					case > 'a' and < 'z':
-					case > 'A' and < 'Z': {
-						return text[0].ToString();
-					}
+					return HttpUtility.HtmlEncode(character.ToString());
 				}
 			}
-			return HttpUtility.HtmlEncode(text.ToString());
 		}
-		// Only non-text node without a LotgdFormatCode required is NodeType.ColorClose:
-		return "</span>";
+		if (text.IsSafe()) {
+			return text.ToString();
+		}
+		return HttpUtility.HtmlEncode(text.ToString());
 	}
 
 	internal static string GetOuput(this ref Node node, LotgdFormatCode code) {

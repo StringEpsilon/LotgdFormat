@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Web;
 
@@ -182,7 +181,7 @@ public class Formatter {
 				default:
 					var code = _codeLookup[token.Identifier];
 					if (code != null) {
-						if (!code.Privileged || isPrivileged ) {
+						if (!code.Privileged || isPrivileged) {
 							this.AddNode(new Node(code));
 						}
 					} else {
@@ -193,9 +192,9 @@ public class Formatter {
 			if (token.Length != 0) {
 				if (token.Length == input.Length) {
 					// we got the entire span back as text => no formatting token present
-					return !isUnsafe
-						? HttpUtility.HtmlEncode(input)
-						: input;
+					return isUnsafe || input.IsSafe()
+						? input
+						: HttpUtility.HtmlEncode(input);
 				}
 				this._nodes.Add(new Node(token.Index, token.Length, isUnsafe));
 			}

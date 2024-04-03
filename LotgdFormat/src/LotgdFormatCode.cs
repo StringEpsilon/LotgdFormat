@@ -18,19 +18,22 @@ public class LotgdFormatCode {
 
 		if (this.Color != null) {
 			this._nodeType = NodeType.Color;
-			this._nodeOutput = $"<span class=\"c{(int)this.Token}\">";
+			this._nodeOutput = string.Concat("<span class=\"c",((int)this.Token).ToString(),"\">");
+			this._nodeOutputClose = "";
 		} else if (this.Tag == null) {
 			this._nodeType = NodeType.Invalid;
 			this._nodeOutput = "";
+			this._nodeOutputClose = "";
 		} else if (this.SelfClosing) {
 			this._nodeType = NodeType.SelfClosing;
-			this._nodeOutput = $"<{this.Tag}/>";
+			this._nodeOutput = string.Concat("<",this.Tag,"/>");
+			this._nodeOutputClose = "";
 		} else {
 			this._nodeType = NodeType.Tag;
-			this._nodeOutputClose = $"</{this.Tag}>";
+			this._nodeOutputClose = string.Concat("</",this.Tag,">");
 			this._nodeOutput = this.Style == null
-				? $"<{this.Tag}>"
-				: $"<{this.Tag} {this.Style}>";
+				? string.Concat("<",this.Tag, ">")
+				: string.Concat("<",this.Tag, " ", this.Style, ">");
 		}
 	}
 
@@ -65,8 +68,8 @@ public class LotgdFormatCode {
 	/// </summary>
 	public bool Privileged { get; }
 
-	internal readonly string _nodeOutput = "";
-	internal readonly string _nodeOutputClose = "";
+	internal readonly string _nodeOutput;
+	internal readonly string _nodeOutputClose;
 	internal readonly NodeType _nodeType = NodeType.Invalid;
 }
 

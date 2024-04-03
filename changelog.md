@@ -1,3 +1,8 @@
+# 0.13.3
+- Performance: The assembly of the final output string of `.AddText()`  has been sped up.
+- Performance: Bypass `HttpUtility.HtmlEncode` for strings containing only whitelisted characters.
+- Performance: Improve construction time of `LotgdFormatCode`.
+
 # 0.13.2
 - Bugfix: Inputs ending on ` will no longer crash.
 - Performance: If input contains no tokens, shortcut the output.

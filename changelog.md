@@ -1,3 +1,22 @@
+# 0.13.4
+- Fixed color tracking where the use of "`0" could prevent the emission of a new color span
+  if the new color is the same as the previosly closed.
+
+For example
+```
+Some `@green `0text. `@More green`0
+=>
+Some <span class="c64>greeen </span> text. More green
+```
+
+Now correctly renders
+
+```
+Some `@green `0text. `@More green`0
+=>
+Some <span class="c64>greeen </span> text. <span class="c64">More green</span>
+```
+
 # 0.13.3
 - Performance: The assembly of the final output string of `.AddText()`  has been sped up.
 - Performance: Bypass `HttpUtility.HtmlEncode` for strings containing only whitelisted characters.

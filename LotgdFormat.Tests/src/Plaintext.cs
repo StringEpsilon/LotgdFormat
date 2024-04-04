@@ -6,6 +6,8 @@ public class Plaintext {
 	private Formatter _formatter = new Formatter([]);
 
 	[Theory]
+	[InlineData(null, "")]
+	[InlineData("", "")]
 	[InlineData("Hello World", "Hello World")]
 	[InlineData("`0Hello World", "Hello World")]
 	[InlineData("Hello`0 World", "Hello World")]
@@ -29,8 +31,12 @@ public class Plaintext {
 
 	[Theory]
 	[InlineData("<script>alert('XSS');</script>", true, "<script>alert('XSS');</script>")]
-	[InlineData("`0&`0`0\"`0", false, "&amp;&quot;")]
+	[InlineData("`0<script>alert('XSS');</script>", true, "<script>alert('XSS');</script>")]
 	[InlineData("<script>alert('XSS');</script>", false, "&lt;script&gt;alert(&#39;XSS&#39;);&lt;/script&gt;")]
+	[InlineData("`0&", false, "&amp;")]
+	[InlineData("`0 ", false, " ")]
+	[InlineData("`0abc", false, "abc")]
+	[InlineData("`0\n`0\"`0", false, "&quot;")]
 	public void Renders_SafeAndUnsafe(string input, bool isUnsafe, string expected) {
 		string result = _formatter.AddText(input, isUnsafe);
 		Assert.Equal(expected, result);

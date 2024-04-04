@@ -68,6 +68,15 @@ public class Tag {
 	}
 
 	[Fact]
+	public void Omits_Empty_Tags() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode('c', tag: "center")
+		});
+		string result = formatter.AddText("`c`c");
+		Assert.Equal("", result);
+	}
+
+	[Fact]
 	public void RendersCorrectWithoutPreamble() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode('H', tag: "span", style: "class='navhi'")

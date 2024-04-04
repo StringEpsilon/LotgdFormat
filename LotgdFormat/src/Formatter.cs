@@ -7,7 +7,6 @@ namespace LotgdFormat;
 #nullable enable
 
 public class Formatter {
-	private static ArrayPool<Node> _nodePool = ArrayPool<Node>.Create();
 	private readonly HashArray<LotgdFormatCode> _codeLookup;
 	private char? _currentColor;
 	private readonly List<Node> _nodes = new();
@@ -30,6 +29,7 @@ public class Formatter {
 		}
 		if (this._lastColor < 0) {
 			this._nodes.Add(new Node(NodeType.ColorClose));
+			this._currentColor = null;
 			return;
 		}
 		var index = this._nodes.Count - 1;

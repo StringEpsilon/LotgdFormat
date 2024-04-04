@@ -33,13 +33,15 @@ public class Cleanup {
 	[Fact]
 	public void ColorCloseMultipleTexts() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
-			new LotgdFormatCode('c', tag: "center"),
 			new LotgdFormatCode('$', color: "FF0000"),
 			new LotgdFormatCode('@', color: "00FF00"),
 		});
-		;
 		var foo = formatter.AddText("`$");
-		foo += formatter.AddText("FooBar`0");
+		foo += formatter.AddText("FooBar`0 ");
+		Assert.Equal("<span class=\"c36\">FooBar</span> ", foo);
+
+		foo = formatter.AddText("`$FooBar");
+		foo += formatter.CloseOpenTags();
 		Assert.Equal("<span class=\"c36\">FooBar</span>", foo);
 	}
 }

@@ -1,6 +1,6 @@
 # 0.13.4
 - Fixed color tracking where the use of "`0" could prevent the emission of a new color span
-  if the new color is the same as the previosly closed.
+  if the new color is the same as the previously closed:
 
 For example
 ```
@@ -28,7 +28,7 @@ Some <span class="c64>greeen </span> text. <span class="c64">More green</span>
 - Performance: Shortcut length 1 strings of "&" in html encode (into `&amp`).
 
 # 0.13.1
-- Bugfix: Code at the very beginning ot the input could misbehave in some scenarios.
+- Bugfix: Code at the very beginning of the input could misbehave in some scenarios.
 
 # 0.13
 

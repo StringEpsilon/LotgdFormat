@@ -16,7 +16,7 @@ internal class HashArray<T> where T : class {
 	private T[] _bucket;
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private T? Get(char key) {
+	internal T? Get(in char key) {
 		var hash = this.Hash(key);
 		if (hash > _bucket.Length) {
 			return null;
@@ -57,7 +57,7 @@ internal class HashArray<T> where T : class {
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private int Hash(char input) {
+	private int Hash(in char input) {
 		return (input + this._hashIndex).GetHashCode() & (this._bucket.Length);
 	}
 
@@ -68,9 +68,5 @@ internal class HashArray<T> where T : class {
 		for (int i = 0; i < data.Length; i++) {
 			this._bucket[this.Hash(keys[i])] = data[i];
 		}
-	}
-
-	internal T? this[char key] {
-		get => this.Get(key);
 	}
 }

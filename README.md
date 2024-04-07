@@ -50,6 +50,30 @@ output (indented for easier reading):
 	still red still red.
 ```
 
+## How to use
+
+First, instantiate a formatter, then use `AddText()`
+
+```cs
+var formatter = new Formatter([
+	new LotgdFormatCode('n', tag: "br", selfClosing: true),
+	new LotgdFormatCode('b', tag: "b"),
+	new LotgdFormatCode('i', tag: "i"),
+	new LotgdFormatCode('@', color: "00FF00"),
+	new LotgdFormatCode('$', color: "00FF00"),
+]);
+
+var html = formatter.AddText("`bLegend`b of the `@Green`0 Dragon.");
+// html = "<b>Legend<b> of the <span class='c64'>Green</span> Dragon"
+```
+
+The formatter does keep track of tags that were opened but not closed.
+
+You can check the status via `Formatter.IsClear()`.
+
+And generate the appropriate closing tags with `Formatter.CloseOpenTags()`.
+
+
 ## Code syntax
 
 Every code is marked with a backtick ` and consists of a single arbitrary character.
@@ -80,8 +104,8 @@ Examples:
 ```html
 `@this is green `$this is red.
 =>
-<span class="lotgd-c64">this is green</span>
-<span class="lotgd-c36">this is red</span>
+<span class="c64">this is green</span>
+<span class="c36">this is red</span>
 ```
 
 This library treats all codes that only have a token and a color as color codes.
@@ -97,8 +121,7 @@ Example:
 ```html
 This is line one.`nThis is line two.
 =>
-This is line one.<br/>
-This is line two.
+This is line one.<br/>This is line two.
 ```
 
 This library only treats codes configured as such to be self closing.

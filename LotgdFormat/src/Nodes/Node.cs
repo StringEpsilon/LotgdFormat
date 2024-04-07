@@ -46,7 +46,7 @@ internal readonly struct Node {
 }
 
 internal static class NodeExtension {
-	internal static string GetOuput(this ref Node node, ReadOnlySpan<char> input) {
+	internal static string GetOuput(this in Node node, in ReadOnlySpan<char> input) {
 		if (node.Type != NodeType.Text) {
 			// Only non-text node without a LotgdFormatCode required is NodeType.ColorClose:
 			return "</span>";
@@ -84,7 +84,7 @@ internal static class NodeExtension {
 		return HttpUtility.HtmlEncode(text.ToString());
 	}
 
-	internal static string GetOuput(this ref Node node, LotgdFormatCode code) {
+	internal static string GetOuput(this in Node node, LotgdFormatCode code) {
 		return node.Type switch {
 			NodeType.Color => code._nodeOutput,
 			NodeType.Tag => code._nodeOutput,

@@ -1,3 +1,12 @@
+# Future
+**BREAKING**
+- `new LotgdFormatCode()` will now throw when attempting to construct invalid configuration, such as
+	`new LotgdFormatCode(color: null, tag: null)`
+
+**Regular changes:**
+- Added some missing documentation comments on `LotgdFormatCode`
+- Very minor performance improvements
+
 # 0.13.4
 - Fixed color tracking where the use of "`0" could prevent the emission of a new color span
   if the new color is the same as the previously closed:

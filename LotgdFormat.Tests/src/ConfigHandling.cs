@@ -5,13 +5,12 @@ namespace LotgdFormat.Tests;
 
 public class InvalidConfig {
 	[Fact]
-	public void InvalidCode_Renders_Text() {
-		var formatter = new Formatter([
-			new LotgdFormatCode('E', tag: null, color: null)
-		]);
-		string result = formatter.AddText("`EThis is defective`0");
-
-		Assert.Equal("This is defective", result);
+	public void InvalidCode_Throws() {
+		var exception = Assert.Throws<ArgumentException>(() => {
+			new LotgdFormatCode('E', tag: null, color: null);
+		});
+		Assert.Equal("When no color is configured, a tag name must be provided (Parameter 'tag')", exception.Message);
+		Assert.Equal("tag", exception.ParamName);
 	}
 
 	[Fact]

@@ -163,9 +163,6 @@ public class Formatter {
 
 	private void AddNode(in Node node) {
 		switch (node.Type) {
-			case NodeType.Invalid: {
-				return;
-			}
 			case NodeType.Tag: {
 				var code = this._codeLookup.Get(node.Token);
 				if (code != null && this.IsTagOpen(node.Token)) {

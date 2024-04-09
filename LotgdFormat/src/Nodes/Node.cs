@@ -9,7 +9,7 @@ internal readonly struct Node {
 	internal readonly int Size = 0;
 	internal readonly char Token;
 
-	public Node(NodeType type) {
+	internal Node(NodeType type) {
 		this.Type = type;
 	}
 
@@ -25,20 +25,20 @@ internal readonly struct Node {
 	/// <param name="IsUnsafe">
 	/// Whether the text is unsafe and needs to be HTML-Encoded when rendering.
 	/// </param>
-	public Node(int textStart, int textLength, bool IsUnsafe) {
+	internal Node(int textStart, int textLength, bool IsUnsafe) {
 		this.Type = NodeType.Text;
 		this.TextStart = textStart;
 		this.Size = textLength;
 		this.IsUnsafe = IsUnsafe;
 	}
 
-	public Node(NodeType type, LotgdFormatCode code) {
+	internal Node(NodeType type, LotgdFormatCode code) {
 		this.Type = type;
 		this.Token = code.Token;
 		this.Size = 0;
 	}
 
-	public Node(LotgdFormatCode code) {
+	internal Node(LotgdFormatCode code) {
 		this.Type = code._nodeType;
 		this.Token = code.Token;
 		this.Size = 0;

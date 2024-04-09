@@ -1,7 +1,6 @@
 namespace LotgdFormat;
 
-public enum NodeType {
-	Invalid,
+internal enum NodeType {
 	Text,
 	Color,
 	ColorClose,

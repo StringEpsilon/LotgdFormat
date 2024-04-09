@@ -1,6 +1,32 @@
 ﻿namespace LotgdFormat;
 
+/// <summary>
+/// Configuration for a formatting token.
+/// </summary>
 public class LotgdFormatCode {
+	/// <summary>
+	/// Create a new formatting code configuration.
+	/// </summary>
+	/// <param name="token">
+	/// The single character that identifies this formatting.
+	/// </param>
+	/// <param name="privileged">
+	/// Whether or not the token can only be used in certain priviliged context
+	/// (determined by <see cref="Formatter.AddText(in string, bool, bool)"/>).
+	/// </param>
+	/// <param name="color">
+	/// The hexadecimal color to apply to formatted text. <br/>
+	/// If this parameter is null, the code is presumed to be a tag and <paramref name="tag"/> must be provided.
+	/// </param>
+	/// <param name="tag">
+	/// The html tag name that the token should render (i.e. "br" or "strong").
+	/// </param>
+	/// <param name="selfClosing">
+	/// For tags: Whether or not the tag is self-closing.
+	/// </param>
+	/// <param name="style">
+	/// Additional style applied and other attributes to the tag.
+	/// </param>
 	public LotgdFormatCode(
 		char token,
 		bool selfClosing = false,
@@ -21,9 +47,7 @@ public class LotgdFormatCode {
 			this._nodeOutput = string.Concat("<span class=\"c",((int)this.Token).ToString(),"\">");
 			this._nodeOutputClose = "";
 		} else if (this.Tag == null) {
-			this._nodeType = NodeType.Invalid;
-			this._nodeOutput = "";
-			this._nodeOutputClose = "";
+			throw new ArgumentException("When no color is configured, a tag name must be provided", nameof(tag));
 		} else if (this.SelfClosing) {
 			this._nodeType = NodeType.SelfClosing;
 			this._nodeOutput = string.Concat("<",this.Tag,"/>");
@@ -70,6 +94,6 @@ public class LotgdFormatCode {
 
 	internal readonly string _nodeOutput;
 	internal readonly string _nodeOutputClose;
-	internal readonly NodeType _nodeType = NodeType.Invalid;
+	internal readonly NodeType _nodeType;
 }
 

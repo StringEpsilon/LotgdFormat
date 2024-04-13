@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 namespace LotgdFormat;
 
 /// <summary>
@@ -25,32 +26,32 @@ internal ref struct TokenEnumerator {
 		var currentLength = span.IndexOf('`'); // next index of ` is the length of the text we got.
 		if (currentLength == -1 || span.Length == 1) {
 			// handling of input end:
-			this._current.Index = this._offset;
-			this._current.Length = span.Length;
-			this._current.Identifier = '\0';
+			this._current._index = this._offset;
+			this._current._length = span.Length;
+			this._current._identifier = '\0';
 			_offset = _inputString.Length;
 			return true;
 		}
 		if (span[0] == '`') {
 			if (span[1] == '`') { // Handle "``" by treating the second ` as part of the text.
-				this._current.Index = this._offset+1;
-				this._current.Length = currentLength+1;
-				this._current.Identifier = '\0';
+				this._current._index = this._offset + 1;
+				this._current._length = currentLength + 1;
+				this._current._identifier = '\0';
 			} else {
-				this._current.Index = this._offset+2;
-				this._current.Length = currentLength;
-				this._current.Identifier = span[1]; // the code token itself is always the character after `
+				this._current._index = this._offset + 2;
+				this._current._length = currentLength;
+				this._current._identifier = span[1]; // the code token itself is always the character after `
 			}
-			_offset += currentLength+2;
+			_offset += currentLength + 2;
 		} else {
 			// If we have no `, we can return the entire span we got.
-			this._current.Index = this._offset;
-			this._current.Length = currentLength;
-			this._current.Identifier = '\0';
+			this._current._index = this._offset;
+			this._current._length = currentLength;
+			this._current._identifier = '\0';
 			_offset += currentLength;
 		}
 		return true;
 	}
 
-	public FormatToken Current { get => _current;  }
+	public FormatToken Current { get => _current; }
 }

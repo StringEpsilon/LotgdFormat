@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0-only
+namespace LotgdFormat;
+
 using System.Buffers;
 
 internal static class StringExtensions {

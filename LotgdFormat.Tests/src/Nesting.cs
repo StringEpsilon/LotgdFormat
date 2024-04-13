@@ -1,5 +1,6 @@
-
+// SPDX-License-Identifier: GPL-2.0-only
 namespace LotgdFormat.Tests;
+
 using LotgdFormat;
 using Xunit;
 
@@ -11,7 +12,7 @@ public class Nesting {
 			new LotgdFormatCode('b', tag:"b"),
 		]);
 
-		string result = formatter.AddText("`@green `bbold green`0 bold`b");;
+		string result = formatter.AddText("`@green `bbold green`0 bold`b"); ;
 
 		Assert.Equal("<span class=\"c64\">green <b>bold green</b></span><b> bold</b>", result);
 	}

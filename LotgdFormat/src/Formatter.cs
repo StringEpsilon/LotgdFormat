@@ -1,9 +1,8 @@
-﻿using System.Runtime.InteropServices;
-using System.Web;
-
+﻿// SPDX-License-Identifier: GPL-2.0-only
 namespace LotgdFormat;
 
-#nullable enable
+using System.Runtime.InteropServices;
+using System.Web;
 
 public class Formatter {
 	private readonly HashArray<LotgdFormatCode> _codeLookup;
@@ -42,31 +41,31 @@ public class Formatter {
 
 		var enumerator = new TokenEnumerator(input);
 		foreach (var token in enumerator) {
-			switch (token.Identifier) {
+			switch (token._identifier) {
 				case '\0':
 					break;
 				case '0':
 					this.CloseColor();
 					break;
 				default:
-					var code = this._codeLookup.Get(token.Identifier);
+					var code = this._codeLookup.Get(token._identifier);
 					if (code != null) {
 						if (!code.Privileged || isPrivileged) {
 							this.AddNode(new Node(code));
 						}
 					} else {
-						this._nodes.Add(new Node(token.Index - 1, 1, isUnsafe));
+						this._nodes.Add(new Node(token._index - 1, 1, isUnsafe));
 					}
 					break;
 			}
-			if (token.Length != 0) {
-				if (token.Length == input.Length) {
+			if (token._length != 0) {
+				if (token._length == input.Length) {
 					// we got the entire span back as text => no formatting token present
 					return isUnsafe || input.IsSafe()
 						? input
 						: HttpUtility.HtmlEncode(input);
 				}
-				this._nodes.Add(new Node(token.Index, token.Length, isUnsafe));
+				this._nodes.Add(new Node(token._index, token._length, isUnsafe));
 			}
 		}
 
@@ -131,7 +130,7 @@ public class Formatter {
 			return;
 		}
 		var index = this._nodes.Count - 1;
-		if (index == this._lastColor && this._nodes[_lastColor].Type == NodeType.Color) {
+		if (index == this._lastColor && this._nodes[_lastColor]._type == NodeType.Color) {
 			this._nodes.RemoveAt(this._lastColor);
 			this._lastColor = -1;
 			this._currentColor = null;
@@ -142,13 +141,13 @@ public class Formatter {
 		var i = stack.Length - 1;
 		for (; index > this._lastColor; index--) {
 			var node = this._nodes[index];
-			if (node.Type == NodeType.Tag && this.IsTagOpen(node.Token)) {
-				var code = this._codeLookup.Get(node.Token);
+			if (node._type == NodeType.Tag && this.IsTagOpen(node._token)) {
+				var code = this._codeLookup.Get(node._token);
 				if (code != null) {
 					stack[i] = node;
 					i--;
 					this._nodes.Add(new Node(NodeType.TagClose, code));
-					this._openTags[node.Token] = false;
+					this._openTags[node._token] = false;
 				}
 			}
 		}
@@ -162,25 +161,25 @@ public class Formatter {
 
 
 	private void AddNode(in Node node) {
-		switch (node.Type) {
+		switch (node._type) {
 			case NodeType.Tag: {
-				var code = this._codeLookup.Get(node.Token);
-				if (code != null && this.IsTagOpen(node.Token)) {
-					if (this._nodes.Count > 0 && this._nodes.Last().Token == node.Token) {
+				var code = this._codeLookup.Get(node._token);
+				if (code != null && this.IsTagOpen(node._token)) {
+					if (this._nodes.Count > 0 && this._nodes.Last()._token == node._token) {
 						this._nodes.RemoveAt(this._nodes.Count - 1);
 					} else {
 						this._nodes.Add(new Node(NodeType.TagClose, code));
 					}
-					this._openTags[node.Token] = false;
+					this._openTags[node._token] = false;
 				} else {
 					this._nodes.Add(node);
-					this.SetTagOpenStatus(node.Token, true);
+					this.SetTagOpenStatus(node._token, true);
 				}
 				break;
 			}
 			case NodeType.Color: {
 				if (this._color) {
-					if (this._currentColor == node.Token) {
+					if (this._currentColor == node._token) {
 						break;
 					}
 					if (_lastColor >= 0) {
@@ -189,7 +188,7 @@ public class Formatter {
 					}
 					this._nodes.Add(node);
 					this._lastColor = this._nodes.Count - 1;
-					this._currentColor = node.Token;
+					this._currentColor = node._token;
 					break;
 				}
 				break;
@@ -212,9 +211,9 @@ public class Formatter {
 
 		for (int i = 0; i < nodeCount; i++) {
 			var node = _nodes[i];
-			LotgdFormatCode? code = node.Token == '\0'
+			LotgdFormatCode? code = node._token == '\0'
 				? null
-				: this._codeLookup.Get(node.Token);
+				: this._codeLookup.Get(node._token);
 			if (code != null) {
 				outputs[i] = node.GetOuput(code);
 			} else {

@@ -1,4 +1,5 @@
-﻿namespace LotgdFormat;
+﻿// SPDX-License-Identifier: GPL-2.0-only
+namespace LotgdFormat;
 
 /// <summary>
 /// Configuration for a formatting token.
@@ -44,20 +45,20 @@ public class LotgdFormatCode {
 
 		if (this.Color != null) {
 			this._nodeType = NodeType.Color;
-			this._nodeOutput = string.Concat("<span class=\"c",((int)this.Token).ToString(),"\">");
+			this._nodeOutput = string.Concat("<span class=\"c", ((int)this.Token).ToString(), "\">");
 			this._nodeOutputClose = "";
 		} else if (this.Tag == null) {
 			throw new ArgumentException("When no color is configured, a tag name must be provided", nameof(tag));
 		} else if (this.SelfClosing) {
 			this._nodeType = NodeType.SelfClosing;
-			this._nodeOutput = string.Concat("<",this.Tag,"/>");
+			this._nodeOutput = string.Concat("<", this.Tag, "/>");
 			this._nodeOutputClose = "";
 		} else {
 			this._nodeType = NodeType.Tag;
-			this._nodeOutputClose = string.Concat("</",this.Tag,">");
+			this._nodeOutputClose = string.Concat("</", this.Tag, ">");
 			this._nodeOutput = this.Style == null
-				? string.Concat("<",this.Tag, ">")
-				: string.Concat("<",this.Tag, " ", this.Style, ">");
+				? string.Concat("<", this.Tag, ">")
+				: string.Concat("<", this.Tag, " ", this.Style, ">");
 		}
 	}
 

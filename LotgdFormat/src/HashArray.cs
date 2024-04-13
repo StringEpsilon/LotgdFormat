@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0-only
 using System.Runtime.CompilerServices;
 
-#nullable enable
+namespace LotgdFormat;
 
 /// <summary>
 /// Custom hash table using a flat array and a perfect hash algorithm. <br/>
@@ -33,7 +34,7 @@ internal class HashArray<T> where T : class {
 		size |= size >> 8;
 		size |= size >> 16;
 		size++;
-		return (int)(size<<1)-1;
+		return (int)(size << 1) - 1;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -49,7 +50,7 @@ internal class HashArray<T> where T : class {
 				}
 			}
 			return index;
-			outer:
+		outer:
 			used.Clear();
 			index++;
 		}
@@ -61,8 +62,8 @@ internal class HashArray<T> where T : class {
 		return (input + this._hashIndex).GetHashCode() & (this._bucket.Length);
 	}
 
-	internal HashArray(ReadOnlySpan<char> keys, Span<T> data ) {
-		int bucketSize = Math.Max(127,GetSize((uint)data.Length));
+	internal HashArray(ReadOnlySpan<char> keys, Span<T> data) {
+		int bucketSize = Math.Max(127, GetSize((uint)data.Length));
 		this._hashIndex = FindHashIndex(keys, bucketSize);
 		this._bucket = new T[bucketSize];
 		for (int i = 0; i < data.Length; i++) {

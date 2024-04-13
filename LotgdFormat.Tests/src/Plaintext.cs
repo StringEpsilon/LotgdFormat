@@ -1,4 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0-only
 namespace LotgdFormat.Tests;
+
 using LotgdFormat;
 using Xunit;
 

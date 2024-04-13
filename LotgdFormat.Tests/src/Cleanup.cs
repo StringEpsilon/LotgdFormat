@@ -1,10 +1,10 @@
+// SPDX-License-Identifier: GPL-2.0-only
 namespace LotgdFormat.Tests;
 
 using LotgdFormat;
 using Xunit;
 
 public class Cleanup {
-
 	[Fact]
 	public void Clears_Content() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {

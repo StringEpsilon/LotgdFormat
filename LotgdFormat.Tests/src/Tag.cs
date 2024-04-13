@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 namespace LotgdFormat.Tests;
 
 using LotgdFormat;
@@ -14,6 +15,7 @@ public class Tag {
 
 		Assert.Equal("This is <center>centered", result);
 	}
+
 	[Fact]
 	public void Renders_OpenTag() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
@@ -53,7 +55,7 @@ public class Tag {
 			new LotgdFormatCode('h', tag: "span", style: "class=\"headline\"")
 		});
 
-		string result = formatter.AddText("`hBig Text`h");;
+		string result = formatter.AddText("`hBig Text`h"); ;
 
 		Assert.Equal("<span class=\"headline\">Big Text</span>", result);
 	}

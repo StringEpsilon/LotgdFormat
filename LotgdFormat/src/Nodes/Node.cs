@@ -1,16 +1,15 @@
-using System.Web;
-
+// SPDX-License-Identifier: GPL-2.0-only
 namespace LotgdFormat;
 
 internal readonly struct Node {
-	internal readonly NodeType Type;
-	internal readonly int TextStart;
-	internal readonly bool IsUnsafe = false;
-	internal readonly int Size = 0;
-	internal readonly char Token;
+	internal readonly NodeType _type;
+	internal readonly int _textStart;
+	internal readonly bool _isUnsafe = false;
+	internal readonly int _size = 0;
+	internal readonly char _token;
 
 	internal Node(NodeType type) {
-		this.Type = type;
+		this._type = type;
 	}
 
 	/// <summary>
@@ -26,71 +25,21 @@ internal readonly struct Node {
 	/// Whether the text is unsafe and needs to be HTML-Encoded when rendering.
 	/// </param>
 	internal Node(int textStart, int textLength, bool IsUnsafe) {
-		this.Type = NodeType.Text;
-		this.TextStart = textStart;
-		this.Size = textLength;
-		this.IsUnsafe = IsUnsafe;
+		this._type = NodeType.Text;
+		this._textStart = textStart;
+		this._size = textLength;
+		this._isUnsafe = IsUnsafe;
 	}
 
 	internal Node(NodeType type, LotgdFormatCode code) {
-		this.Type = type;
-		this.Token = code.Token;
-		this.Size = 0;
+		this._type = type;
+		this._token = code.Token;
+		this._size = 0;
 	}
 
 	internal Node(LotgdFormatCode code) {
-		this.Type = code._nodeType;
-		this.Token = code.Token;
-		this.Size = 0;
-	}
-}
-
-internal static class NodeExtension {
-	internal static string GetOuput(this in Node node, in ReadOnlySpan<char> input) {
-		if (node.Type != NodeType.Text) {
-			// Only non-text node without a LotgdFormatCode required is NodeType.ColorClose:
-			return "</span>";
-		}
-		ReadOnlySpan<char> text = input.Slice(node.TextStart, node.Size);
-		if (node.IsUnsafe) {
-			return text.ToString();
-		}
-		if (node.Size == 1) {
-			char character = text[0];
-			switch (character) {
-				case ' ': {
-					return " ";
-				}
-				case '\n': {
-					return "";
-				}
-				case '"': {
-					return "&quot;";
-				}
-				case '&': {
-					return "&amp;";
-				}
-				default: {
-					if (character.IsSafe()) {
-						return character.ToString();
-					}
-					return HttpUtility.HtmlEncode(character.ToString());
-				}
-			}
-		}
-		if (text.IsSafe()) {
-			return text.ToString();
-		}
-		return HttpUtility.HtmlEncode(text.ToString());
-	}
-
-	internal static string GetOuput(this in Node node, LotgdFormatCode code) {
-		return node.Type switch {
-			NodeType.Color => code._nodeOutput,
-			NodeType.Tag => code._nodeOutput,
-			NodeType.SelfClosing => code._nodeOutput,
-			NodeType.TagClose => code._nodeOutputClose,
-			_ => ""
-		};
+		this._type = code._nodeType;
+		this._token = code.Token;
+		this._size = 0;
 	}
 }

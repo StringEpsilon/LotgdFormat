@@ -35,7 +35,7 @@ public class Tag {
 
 		string result = formatter.AddText("`cThis is centered`cThis isn't");
 
-		Assert.Equal("<center>This is centered</center>This isn&#39;t", result);
+		Assert.Equal("<center>This is centered</center>This isn&#x27;t", result);
 	}
 
 	[Fact]
@@ -85,6 +85,6 @@ public class Tag {
 		});
 
 		string result = formatter.AddText("Ü`Hb`Her LoGD");
-		Assert.Equal("&#220;<span class='navhi'>b</span>er LoGD", result);
+		Assert.Equal("&#xDC;<span class='navhi'>b</span>er LoGD", result);
 	}
 }

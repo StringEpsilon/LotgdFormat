@@ -42,7 +42,7 @@ internal class HashArray<T> where T : class {
 		Span<bool> used = stackalloc bool[bucketSize];
 		for (ushort index = 0; index < ushort.MaxValue;) {
 			for (int i = 0; i < array.Length; i++) {
-				var x = ((ushort)array[i] + index).GetHashCode() & (bucketSize);
+				var x = (array[i] + index).GetHashCode() & (bucketSize);
 				if (x > used.Length || used[x] == true) {
 					goto outer;
 				} else {

@@ -11,7 +11,6 @@ public class Formatter {
 	private readonly Dictionary<char, bool> _openTags = new();
 	private int _lastColor = -1;
 	private bool _color = true;
-
 	public bool Color { get => _color; set => _color = value; }
 
 	#region Public methods
@@ -38,7 +37,6 @@ public class Formatter {
 		if (input == null || input.Length == 0) {
 			return "";
 		}
-
 		var enumerator = new TokenEnumerator(input);
 		foreach (var token in enumerator) {
 			switch (token._identifier) {
@@ -61,7 +59,7 @@ public class Formatter {
 			if (token._length != 0) {
 				if (token._length == input.Length) {
 					// we got the entire span back as text => no formatting token present
-					return isUnsafe || input.IsSafe()
+					return isUnsafe || input.AsSpan().IsSafe()
 						? input
 						: HttpUtility.HtmlEncode(input);
 				}
@@ -94,6 +92,11 @@ public class Formatter {
 				}
 				this._openTags[token] = false;
 			}
+		}
+		if (this._nodes.Count == 0) {
+			this._nodes.Clear();
+			this._lastColor = -1;
+			return "";
 		}
 		return this.CreateOutput("");
 	}
@@ -154,11 +157,12 @@ public class Formatter {
 		this._nodes.Add(new Node(NodeType.ColorClose));
 		this._lastColor = -1;
 		this._currentColor = null;
-		for (i = 0; i < stack.Length; i++) {
-			this.AddNode(stack[i]);
+		for (; i < stack.Length; i++) {
+			if (stack[i]._type != NodeType.Text) {
+				this.AddNode(stack[i]);
+			}
 		}
 	}
-
 
 	private void AddNode(in Node node) {
 		switch (node._type) {
@@ -211,7 +215,7 @@ public class Formatter {
 
 		for (int i = 0; i < nodeCount; i++) {
 			var node = _nodes[i];
-			LotgdFormatCode? code = node._token == '\0'
+			var code = node._token == '\0'
 				? null
 				: this._codeLookup.Get(node._token);
 			if (code != null) {

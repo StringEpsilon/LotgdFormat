@@ -1,11 +1,21 @@
-# Future
+# 0.14.0
 **BREAKING**
 - `new LotgdFormatCode()` will now throw when attempting to construct invalid configuration, such as
 	`new LotgdFormatCode(color: null, tag: null)`
+- Switched to using `HtmlEncoder` over `HttpUtility.HtmlEncode`
+
+  This improves performance on medium to large inputs that contain characters that should be encoded. Bigger inputs see
+  bigger gains. But it also slightly changes how individual characters may be encoded.
+  On small inputs (< 64 characters), especially without characters that need escaping, there is a minor performance
+  regression.
+
+- Made several enums and structs internal that were erroneously public before.
 
 **Regular changes:**
 - Added some missing documentation comments on `LotgdFormatCode`
-- Very minor performance improvements
+- Added short-circuit for `CloseOpenTags()` if there are no output nodes (saves some memory allocations)
+- Avoid generating zero-length text nodes when unstacking and restacking tags on "color close" (`0).
+  - Avoids some memory allocation and saves loop iterations in 3 places.
 
 # 0.13.4
 - Fixed color tracking where the use of "`0" could prevent the emission of a new color span

@@ -13,11 +13,18 @@ internal static class StringExtensions {
 		return input.IndexOfAnyExcept(_safeHtmlCharacters) == -1;
 	}
 
-	internal static bool IsSafe(this string input) {
-		return !input.AsSpan().ContainsAnyExcept(_safeHtmlCharacters);
-	}
-
 	internal static bool IsSafe(this ref char input) {
 		return _safeHtmlCharacters.Contains(input);
+	}
+
+	internal static int CountUnsafe(this ReadOnlySpan<char> input) {
+		int count = 0;
+		var unsafeIndex = input.IndexOfAnyExcept(_safeHtmlCharacters);
+		while(unsafeIndex != -1 && input.Length > 0) {
+			input = input.Slice(unsafeIndex+1);
+			unsafeIndex = input.IndexOfAnyExcept(_safeHtmlCharacters);
+			count++;
+		}
+		return count;
 	}
 }

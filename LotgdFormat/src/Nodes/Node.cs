@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-only
+using System.Runtime.InteropServices;
+
 namespace LotgdFormat;
 
 internal readonly struct Node {
-	internal readonly NodeType _type;
-	internal readonly int _textStart;
-	internal readonly bool _isUnsafe = false;
-	internal readonly int _size = 0;
 	internal readonly char _token;
+	internal readonly NodeType _type;
+	internal readonly bool _isUnsafe = false;
+	internal readonly int _textStart;
+	internal readonly int _size = 0;
 
 	internal Node(NodeType type) {
 		this._type = type;

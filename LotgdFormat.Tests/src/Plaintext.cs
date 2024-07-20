@@ -7,6 +7,17 @@ using Xunit;
 public class Plaintext {
 	private Formatter _formatter = new Formatter([]);
 
+
+	[Theory]
+	[InlineData("ä", "&#228;")]
+	[InlineData("ö", "&#246;")]
+	[InlineData("ü", "&#252;")]
+	[InlineData("ß", "&#223;")]
+	public void EscapesUmaauts(string input, string expectedResult) {
+		var result = _formatter.AddText(input, false, false);
+		Assert.Equal(expectedResult, result);
+	}
+
 	[Theory]
 	[InlineData(null, "")]
 	[InlineData("", "")]

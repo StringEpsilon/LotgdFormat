@@ -16,6 +16,7 @@
 - Added short-circuit for `CloseOpenTags()` if there are no output nodes (saves some memory allocations)
 - Avoid generating zero-length text nodes when unstacking and restacking tags on "color close" (`0).
   - Avoids some memory allocation and saves loop iterations in 3 places.
+- Use an ArrayPool for the temporary string allocations needed to HTML encode output text.
 
 # 0.13.4
 - Fixed color tracking where the use of "`0" could prevent the emission of a new color span

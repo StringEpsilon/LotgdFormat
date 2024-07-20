@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 namespace LotgdFormat;
 
+using System.Buffers;
 using System.Text.Encodings.Web;
 
 
@@ -44,12 +45,17 @@ internal static class NodeExtension {
 		if (text.IsSafe()) {
 			return text.ToString();
 		}
-		int length = text.Length + (text.CountUnsafe() *  _maxEncodeLength);
-		Span<char> buffer = length < 256
-			? stackalloc char[length]
-			: new char[length];
+		var rentedArray = ArrayPool<char>.Shared.Rent(
+			// renting 4k should be fine. But for longer inputs we should rent accurately.
+			text.Length < 512
+				? 512 * _maxEncodeLength
+				: text.Length + text.CountUnsafe() *  _maxEncodeLength
+		);
+		Span<char> buffer = new Span<char>(rentedArray);
 		HtmlEncoder.Default.Encode(text, buffer, out _, out int bytesWritten, true);
-		return buffer.Slice(0, bytesWritten).ToString();
+		var result = buffer.Slice(0, bytesWritten).ToString();
+		ArrayPool<char>.Shared.Return(rentedArray);
+		return result;
 	}
 
 	internal static string GetOuput(this in Node node, LotgdFormatCode code) {

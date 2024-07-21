@@ -45,6 +45,7 @@ internal static class NodeExtension {
 		if (text.IsSafe()) {
 			return text.ToString();
 		}
+
 		var rentedArray = ArrayPool<char>.Shared.Rent(
 			// renting 4k should be fine. But for longer inputs we should rent accurately.
 			text.Length < 512

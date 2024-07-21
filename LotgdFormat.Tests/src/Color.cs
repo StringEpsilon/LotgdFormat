@@ -26,6 +26,45 @@ public class Color {
 	}
 
 	[Fact]
+	public void FormatsLargeInput() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode('^', color: "FFFF00"),
+			new LotgdFormatCode('@', color: "00FF00"),
+			new LotgdFormatCode('$', color: "FF0000"),
+			new LotgdFormatCode('b', tag: "strong"),
+			new LotgdFormatCode('n', tag: "br", selfClosing: true)
+		});
+
+		string result = formatter.AddText(
+			"`^`bYour first day`b`n`@"
+			+ "Your first day in the world can be very confusing! You're presented with a lot of information, and you don't "
+			+ "need almost any of it! It's true! One thing you should probably keep an eye on though, are your hit points. "
+			+ "This is found under \"Vital Info.\" No matter what profession you choose, in the end, you are some kind of "
+			+ "warrior or fighter, and so you need to learn how to do battle. The best way to do this is to look for "
+			+ "creatures to kill in the forest. When you find one, check it out, and make sure that it's not a higher "
+			+ "level than you, because if it is, you might not live through the fight. Keep in mind that you can always "
+			+ "try to run away from something that you encountered, but some times it might take several tries before you "
+			+ "get away. You might want to buy armor and weapons in the village square in order to give yourself a better "
+			+ "chance against these creatures out in the forest.`n"
+		);
+		Assert.Equal(
+			"<span class=\"c94\"><strong>Your first day</strong><br/></span><span class=\"c64\">"
+			+ "Your first day in the world can be very confusing! You&#x27;re presented with a lot of information, and you "
+			+ "don&#x27;t need almost any of it! It&#x27;s true! One thing you should probably keep an eye on though, are your hit "
+			+ "points. This is found under &quot;Vital Info.&quot; No matter what profession you choose, in the end, you are some "
+			+ "kind of warrior or fighter, and so you need to learn how to do battle. The best way to do this is to look "
+			+ "for creatures to kill in the forest. When you find one, check it out, and make sure that it&#x27;s not a higher "
+			+ "level than you, because if it is, you might not live through the fight. Keep in mind that you can always "
+			+ "try to run away from something that you encountered, but some times it might take several tries before you "
+			+ "get away. You might want to buy armor and weapons in the village square in order to give yourself a better "
+			+ "chance against these creatures out in the forest.<br/>",
+			result
+
+		);
+
+	}
+
+	[Fact]
 	public void Renders_Plaintext_ColorDisabled() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode('@', color: "00FF00"),

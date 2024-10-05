@@ -13,7 +13,10 @@ internal static class NodeExtension {
 			// Only non-text node without a LotgdFormatCode required is NodeType.ColorClose:
 			return "</span>";
 		}
-		ReadOnlySpan<char> text = input.Slice(node._textStart, node._size);
+		ReadOnlySpan<char> text = input.Slice(node._textStart, node._size).Trim("\t\r\n");
+		if (text.Length == 0) {
+			return "";
+		}
 		if (node._isUnsafe) {
 			return text.ToString();
 		}

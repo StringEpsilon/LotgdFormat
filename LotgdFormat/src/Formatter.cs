@@ -4,8 +4,21 @@ namespace LotgdFormat;
 using System.Runtime.InteropServices;
 using System.Web;
 
+public class FormatterConfig {
+	internal readonly HashArray<LotgdFormatCode> _codeLookup;
+
+	public FormatterConfig(List<LotgdFormatCode> codes) {
+		var codeArray = CollectionsMarshal.AsSpan(codes);
+		Span<char> keys = stackalloc char[codes.Count];
+		for (int i = 0; i < codeArray.Length; i++) {
+			keys[i] = codeArray[i].Token;
+		}
+		this._codeLookup = new HashArray<LotgdFormatCode>(keys, codeArray);
+	}
+}
+
 public class Formatter {
-	private readonly HashArray<LotgdFormatCode> _codeLookup;
+	private HashArray<LotgdFormatCode> _codeLookup;
 	private char? _currentColor;
 	private readonly List<Node> _nodes = new();
 	private readonly Dictionary<char, bool> _openTags = new();
@@ -14,13 +27,19 @@ public class Formatter {
 	public bool Color { get => _color; set => _color = value; }
 
 	#region Public methods
-	public Formatter(List<LotgdFormatCode> config) {
-		var codeArray = CollectionsMarshal.AsSpan(config);
-		Span<char> keys = stackalloc char[config.Count];
+	public Formatter(List<LotgdFormatCode> codes, bool color = true) {
+		var codeArray = CollectionsMarshal.AsSpan(codes);
+		Span<char> keys = stackalloc char[codes.Count];
 		for (int i = 0; i < codeArray.Length; i++) {
 			keys[i] = codeArray[i].Token;
 		}
+		this._color = color;
 		this._codeLookup = new HashArray<LotgdFormatCode>(keys, codeArray);
+	}
+
+	public Formatter(FormatterConfig config, bool color = true) {
+		this._color = color;
+		this._codeLookup = config._codeLookup;
 	}
 
 	/// <summary>
@@ -37,7 +56,8 @@ public class Formatter {
 		if (input == null || input.Length == 0) {
 			return "";
 		}
-		var enumerator = new TokenEnumerator(input);
+		var inputSpan = input.AsSpan();
+		var enumerator = new TokenEnumerator(inputSpan);
 		foreach (var token in enumerator) {
 			switch (token._identifier) {
 				case '\0':
@@ -59,11 +79,13 @@ public class Formatter {
 			if (token._length != 0) {
 				if (token._length == input.Length) {
 					// we got the entire span back as text => no formatting token present
-					return isUnsafe || input.AsSpan().IsSafe()
+					return isUnsafe || inputSpan.IsSafe()
 						? input
 						: HttpUtility.HtmlEncode(input);
 				}
-				this._nodes.Add(new Node(token._index, token._length, isUnsafe));
+				if (inputSpan.Slice(token._index, token._length).ContainsAnyExcept("\t\r\n")) {
+					this._nodes.Add(new Node(token._index, token._length, isUnsafe));
+				}
 			}
 		}
 

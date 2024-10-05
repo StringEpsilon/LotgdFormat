@@ -1,3 +1,8 @@
+# 0.15.0
+- Added new Formatter constructor that takes a `FormatterConfig`
+- Performance: Trim newlines and tabs off text leafs.
+- Add .NET 9.0 to target frameworks.
+
 # 0.14.0
 **BREAKING**
 - `new LotgdFormatCode()` will now throw when attempting to construct invalid configuration, such as

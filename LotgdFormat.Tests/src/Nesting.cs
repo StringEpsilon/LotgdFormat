@@ -35,4 +35,20 @@ public class Nesting {
 
 		Assert.Equal(" <b>bold</b>", result);
 	}
+
+	[Fact]
+	public void Unstacks_Colors_MultiFragment() {
+		var formatter = new Formatter([
+			new LotgdFormatCode('1', color: "010101"),
+			new LotgdFormatCode('2', color: "020202"),
+		]);
+		Assert.Equal(
+			"<span class=\"c49\">_____",
+			formatter.AddText("`1_____")
+		);
+		Assert.Equal(
+			"</span><span class=\"c50\">Test</span>",
+			formatter.AddText("`2-----`0")
+		);
+	}
 }

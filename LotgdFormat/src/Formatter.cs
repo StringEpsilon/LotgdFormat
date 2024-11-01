@@ -208,12 +208,12 @@ public class Formatter {
 					if (this._currentColor == node._token) {
 						break;
 					}
-					if (_lastColor >= 0) {
+					if (this._currentColor != null ) {
 						this._nodes.Add(new Node(NodeType.ColorClose));
 						this._currentColor = null;
 					}
+					this._lastColor = this._nodes.Count;
 					this._nodes.Add(node);
-					this._lastColor = this._nodes.Count - 1;
 					this._currentColor = node._token;
 					break;
 				}

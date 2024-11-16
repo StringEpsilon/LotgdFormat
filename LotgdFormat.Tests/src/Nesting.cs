@@ -48,7 +48,7 @@ public class Nesting {
 		);
 		Assert.Equal(
 			"</span><span class=\"c50\">Test</span>",
-			formatter.AddText("`2-----`0")
+			formatter.AddText("`2Test`0")
 		);
 	}
 }

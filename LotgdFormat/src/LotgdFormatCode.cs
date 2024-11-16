@@ -36,6 +36,12 @@ public class LotgdFormatCode {
 		string? style = null,
 		string? tag = null
 	) {
+		if (token == '`' || token == '0') {
+			throw new ArgumentException(
+				$"The token '{token}' is reserved. Overriding them in the configuration is not supported",
+				nameof(token)
+			);
+		}
 		this.Token = token;
 		this.Color = color;
 		this.Style = style;

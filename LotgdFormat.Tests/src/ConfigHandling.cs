@@ -11,6 +11,15 @@ public class InvalidConfig {
 		});
 		Assert.Equal("When no color is configured, a tag name must be provided (Parameter 'tag')", exception.Message);
 		Assert.Equal("tag", exception.ParamName);
+
+		exception = Assert.Throws<ArgumentException>(() => {
+			new LotgdFormatCode('0', tag: "span");
+		});
+		Assert.Equal(
+			"The token '0' is reserved. Overriding them in the configuration is not supported (Parameter 'token')",
+			exception.Message
+		);
+		Assert.Equal("token", exception.ParamName);
 	}
 
 	[Fact]

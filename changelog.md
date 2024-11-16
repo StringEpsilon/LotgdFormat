@@ -1,3 +1,8 @@
+# Future
+- Throw an exception when trying to configure an `LotgdFormatCode` with "0" or "\`" token.
+- Updated documentation.
+
+
 # 0.15.1
 - Fix color tags not being closed when the follow-up color is added in a separate fragment.
   See unit tests `Unstacks_Colors_MultiFragment` for details.

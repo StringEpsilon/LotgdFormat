@@ -109,7 +109,7 @@ public class Formatter {
 		foreach (var token in this._openTags.Keys) {
 			if (this._openTags[token]) {
 				var code = this._codeLookup.Get(token);
-				if (code?.Tag != null) {
+				if (code != null) {
 					this.AddNode(new Node(NodeType.TagClose, code));
 				}
 				this._openTags[token] = false;
@@ -189,8 +189,8 @@ public class Formatter {
 	private void AddNode(in Node node) {
 		switch (node._type) {
 			case NodeType.Tag: {
-				var code = this._codeLookup.Get(node._token);
-				if (code != null && this.IsTagOpen(node._token)) {
+				var code = this._codeLookup.Get(node._token)!;
+				if (this.IsTagOpen(node._token)) {
 					if (this._nodes.Count > 0 && this._nodes.Last()._token == node._token) {
 						this._nodes.RemoveAt(this._nodes.Count - 1);
 					} else {

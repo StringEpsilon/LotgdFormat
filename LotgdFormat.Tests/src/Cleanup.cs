@@ -44,4 +44,15 @@ public class Cleanup {
 		foo += formatter.CloseOpenTags();
 		Assert.Equal("<span class=\"c36\">FooBar</span>", foo);
 	}
+
+	[Fact]
+	public void OmitsIrrelevantWhitespaces() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode('Q', color: "FF0000"),
+			new LotgdFormatCode('8', color: "880000"),
+			new LotgdFormatCode('n', tag: "br", selfClosing: true),
+		});
+		var foo = formatter.AddText("	`Q1. Geltung `n\n\t`8");
+		Assert.Equal("""<span class="c81">1. Geltung <br/></span><span class="c56">""", foo);
+	}
 }

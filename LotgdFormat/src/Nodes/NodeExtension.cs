@@ -2,6 +2,7 @@
 namespace LotgdFormat;
 
 using System.Buffers;
+using System.Diagnostics;
 using System.Text.Encodings.Web;
 
 
@@ -14,20 +15,15 @@ internal static class NodeExtension {
 			return "</span>";
 		}
 		ReadOnlySpan<char> text = input.Slice(node._textStart, node._size).Trim("\t\r\n");
-		if (text.Length == 0) {
-			return "";
-		}
+
 		if (node._isUnsafe) {
 			return text.ToString();
 		}
 		if (node._size == 1) {
-			char character = text[0];
-			switch (character) {
+
+			switch (text[0]) {
 				case ' ': {
 					return " ";
-				}
-				case '\n': {
-					return "";
 				}
 				case '"': {
 					return "&quot;";
@@ -36,6 +32,7 @@ internal static class NodeExtension {
 					return "&amp;";
 				}
 				default: {
+					var character = text[0];
 					if (character.IsSafe()) {
 						return text.ToString();
 					}
@@ -68,7 +65,7 @@ internal static class NodeExtension {
 			NodeType.Tag => code._nodeOutput,
 			NodeType.SelfClosing => code._nodeOutput,
 			NodeType.TagClose => code._nodeOutputClose,
-			_ => ""
+			_ => throw new UnreachableException("Illegal node type should not be possible.")
 		};
 	}
 }

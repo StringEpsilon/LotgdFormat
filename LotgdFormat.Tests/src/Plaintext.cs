@@ -38,7 +38,7 @@ public class Plaintext {
 	[InlineData("Hello ``World``!", "Hello `World`!")]
 	[InlineData("`u`w`u", "uwu")] // drop the ` on unknown tokens.
 	public void Handles_Escape(string input, string expectedResult) {
-		var result = _formatter.AddText(input, false, false);
+		var result = _formatter.AddText(input);
 		Assert.Equal(expectedResult, result);
 	}
 

@@ -15,11 +15,12 @@ public class Color {
 	[InlineData("`@`@`@`@`@`@`0green", "green")]
 	[InlineData("`@green`$red", "<span class=\"c64\">green</span><span class=\"c36\">red")]
 	public void Renders_Colors(string input, string expected) {
-		var formatter = new Formatter(new List<LotgdFormatCode> {
+		var config = new FormatterConfig(new List<LotgdFormatCode> {
 			new LotgdFormatCode('@', color: "00FF00"),
 			new LotgdFormatCode('$', color: "FF0000"),
 			new LotgdFormatCode('b', tag: "strong")
 		});
+		var formatter = new Formatter(config);
 
 		string result = formatter.AddText(input);
 		Assert.Equal(expected, result);
@@ -75,6 +76,7 @@ public class Color {
 		string result = formatter.AddText("`$red `@green `$red `@green");
 
 		Assert.Equal("red green red green", result);
+		Assert.False(formatter.Color);
 	}
 
 	[Fact]
@@ -101,6 +103,15 @@ public class Color {
 		string result = formatter.AddText("`@green");
 		Assert.Equal("<span class=\"c64\">green", result);
 		result += formatter.CloseOpenTags();
+		Assert.Equal("<span class=\"c64\">green</span>", result);
+	}
+	[Fact]
+	public void ClosesColorAccrossFragments() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode('@', color: "00FF00")
+		});
+
+		string result = formatter.AddText("`@green") + formatter.AddText("`0");
 		Assert.Equal("<span class=\"c64\">green</span>", result);
 	}
 

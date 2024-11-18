@@ -70,6 +70,15 @@ public class Tag {
 	}
 
 	[Fact]
+	public void ClosesTagsAccrossFragments() {
+		var formatter = new Formatter(new List<LotgdFormatCode> {
+			new LotgdFormatCode('c', tag: "center")
+		});
+		string result = formatter.AddText("`cThis is centered") + formatter.AddText("`c");
+		Assert.Equal("<center>This is centered</center>", result);
+	}
+
+	[Fact]
 	public void Omits_Empty_Tags() {
 		var formatter = new Formatter(new List<LotgdFormatCode> {
 			new LotgdFormatCode('c', tag: "center")

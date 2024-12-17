@@ -43,13 +43,13 @@ public class LotgdFormatCode {
 			);
 		}
 		this.Token = token;
-		this.Color = color;
+		this.Color = color != null;
 		this.Style = style;
 		this.Tag = tag;
 		this.SelfClosing = selfClosing;
 		this.Privileged = privileged;
 
-		if (this.Color != null) {
+		if (this.Color) {
 			this._nodeType = NodeType.Color;
 			this._nodeOutput = string.Concat("<span class=\"c", ((int)this.Token).ToString(), "\">");
 			this._nodeOutputClose = "";
@@ -77,7 +77,7 @@ public class LotgdFormatCode {
 	/// <summary>
 	/// The six digit hexcode of the desired text color.
 	/// </summary>
-	public string? Color { get; }
+	public bool Color { get; }
 
 	/// <summary>
 	/// Additional CSS rules applied to the rendered HTML element per inline style attribute.

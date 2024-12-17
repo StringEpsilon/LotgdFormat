@@ -53,7 +53,7 @@ public class Formatter {
 	/// Use with caution.
 	/// </param>
 	public string AddText(in string input, bool isUnsafe = false, bool isPrivileged = false) {
-		if (input == null || input.Length == 0) {
+		if (input.Length == 0) {
 			return "";
 		}
 		var inputSpan = input.AsSpan();
@@ -139,11 +139,6 @@ public class Formatter {
 	#endregion
 
 	#region Private methods
-	private void SetTagOpenStatus(in char token, in bool open) {
-		if (!this._openTags.TryAdd(token, open)) {
-			this._openTags[token] = open;
-		}
-	}
 
 	private void CloseColor() {
 		if (this._currentColor == null) {
@@ -199,7 +194,7 @@ public class Formatter {
 					this._openTags[node._token] = false;
 				} else {
 					this._nodes.Add(node);
-					this.SetTagOpenStatus(node._token, true);
+					this._openTags[node._token] = true;
 				}
 				break;
 			}

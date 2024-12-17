@@ -19,7 +19,6 @@ public class Plaintext {
 	}
 
 	[Theory]
-	[InlineData(null, "")]
 	[InlineData("", "")]
 	[InlineData("Hello World", "Hello World")]
 	[InlineData("`0Hello World", "Hello World")]

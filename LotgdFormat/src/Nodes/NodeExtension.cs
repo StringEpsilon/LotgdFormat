@@ -5,7 +5,6 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Text.Encodings.Web;
 
-
 internal static class NodeExtension {
 	private static int _maxEncodeLength = HtmlEncoder.Default.MaxOutputCharactersPerInputCharacter;
 
@@ -14,13 +13,12 @@ internal static class NodeExtension {
 			// Only non-text node without a LotgdFormatCode required is NodeType.ColorClose:
 			return "</span>";
 		}
-		ReadOnlySpan<char> text = input.Slice(node._textStart, node._size).Trim("\t\r\n");
+		ReadOnlySpan<char> text = input.Slice(node._textStart, node._size);
 
 		if (node._isUnsafe) {
 			return text.ToString();
 		}
 		if (node._size == 1) {
-
 			switch (text[0]) {
 				case ' ': {
 					return " ";
@@ -45,7 +43,6 @@ internal static class NodeExtension {
 		if (text.IsSafe()) {
 			return text.ToString();
 		}
-
 		var rentedArray = ArrayPool<char>.Shared.Rent(
 			// renting 4k should be fine. But for longer inputs we should rent accurately.
 			text.Length < 512

@@ -1,7 +1,7 @@
-# Future
+# 1.15.2
 - Throw an exception when trying to configure an `LotgdFormatCode` with "0" or "\`" token.
 - Updated documentation.
-
+- Revert the trimming of whitespace. It can cause some text errors in the output (e.g. Hello`@World).
 
 # 0.15.1
 - Fix color tags not being closed when the follow-up color is added in a separate fragment.

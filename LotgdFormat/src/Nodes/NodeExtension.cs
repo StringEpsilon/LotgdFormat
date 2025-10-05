@@ -43,12 +43,7 @@ internal static class NodeExtension {
 		if (text.IsSafe()) {
 			return text.ToString();
 		}
-		var rentedArray = ArrayPool<char>.Shared.Rent(
-			// renting 4k should be fine. But for longer inputs we should rent accurately.
-			text.Length < 512
-				? 512 * _maxEncodeLength
-				: text.Length + text.CountUnsafe() *  _maxEncodeLength
-		);
+		var rentedArray = ArrayPool<char>.Shared.Rent(text.Length * _maxEncodeLength);
 		Span<char> buffer = new Span<char>(rentedArray);
 		HtmlEncoder.Default.Encode(text, buffer, out _, out int bytesWritten, true);
 		var result = buffer.Slice(0, bytesWritten).ToString();

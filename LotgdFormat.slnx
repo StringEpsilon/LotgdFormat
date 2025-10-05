@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="LotgdFormat.Tests/LotgdFormat.Tests.csproj" />
+  <Project Path="LotgdFormat/LotgdFormat.csproj" />
+</Solution>

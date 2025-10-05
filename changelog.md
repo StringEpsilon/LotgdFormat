@@ -1,3 +1,7 @@
+# 0.16 (Future)
+- Slight performance improvement in the output generation.
+- Target .NET 10.
+
 # 1.15.2
 - Throw an exception when trying to configure an `LotgdFormatCode` with "0" or "\`" token.
 - Updated documentation.
